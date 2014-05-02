@@ -145,7 +145,11 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-html_sidebars = {'index': ['download.html', 'searchbox.html'], 'contents': ['download.html', 'searchbox.html'], 'develop': ['download.html', 'searchbox.html']}
+html_sidebars = {
+    'index': ['download.html', 'sourcelink.html'], 
+    'contents': ['download.html', 'sourcelink.html'], 
+    'develop': ['download.html', 'sourcelink.html'], 
+    '**': ['localtoc.html', 'download.html', 'sourcelink.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

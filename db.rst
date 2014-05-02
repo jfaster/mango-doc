@@ -8,7 +8,7 @@ ________
 
 首先我们需要创建一张user表(这里选择的是MySQL数据库)，后续的所有内容将围绕这张表进行:
 
-.. code-block:: none
+.. code-block:: sql
 
     CREATE TABLE `user` (
       `id` int(11) NOT NULL AUTO_INCREMENT,

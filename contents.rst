@@ -9,7 +9,7 @@ mango文档目录
     quickstart    
     db
     cache   
-    expr
-    sharding
+    datasource
+    extend
     exception
     qa

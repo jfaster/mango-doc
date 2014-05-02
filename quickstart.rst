@@ -19,7 +19,7 @@ __________
     <dependency>
         <groupId>cc.concurrent</groupId>
         <artifactId>mango</artifactId>
-        <version>1.0</version>
+        <version>1.01</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -37,7 +37,7 @@ __________
 
 登陆MySQL服务器，创建数据库mango_db:
 
-.. code-block:: none
+.. code-block:: sql
 
     mysql> create database mango_db;
     Query OK, 1 row affected (0.00 sec)
@@ -45,7 +45,7 @@ __________
 
 在mango_db数据库中创建表hello_world_table:
 
-.. code-block:: none
+.. code-block:: sql
 
     mysql> use mango_db
     Database changed
