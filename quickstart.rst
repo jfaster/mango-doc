@@ -19,7 +19,7 @@ __________
     <dependency>
         <groupId>cc.concurrent</groupId>
         <artifactId>mango</artifactId>
-        <version>1.01</version>
+        <version>1.02</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
