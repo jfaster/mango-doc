@@ -148,6 +148,7 @@ html_static_path = ['_static']
 html_sidebars = {
     'index': ['download.html', 'sourcelink.html'], 
     'contents': ['download.html', 'sourcelink.html'], 
+    'benchmark': ['download.html', 'sourcelink.html'], 
     'develop': ['download.html', 'sourcelink.html'], 
     '**': ['localtoc.html', 'download.html', 'sourcelink.html']}
 

@@ -38,13 +38,3 @@ _____________
 
 您还可以通过电子邮件 **liangyanghe@gmail.com** 联系我，我们可以一起讨论关于mango的一切问题。
 
-性能测试
-________
-
-.. image:: _static/benchmark.png
-    :width: 600px
-
-上图对比测试了5轮直接使用jdbc与使用mango插入数据的平均时间，每轮并发使用8个线程，每个线程插入10000条数据。测试服务器为8核CPU，64G内存，db服务器为MySQL。
-您可以在 `mango-benchmark <http://github.com/javacc/mango-benchmark>`_ 查看性能测试的源码。
-
-
