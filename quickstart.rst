@@ -19,7 +19,7 @@ __________
     <dependency>
         <groupId>cc.concurrent</groupId>
         <artifactId>mango</artifactId>
-        <version>1.03</version>
+        <version>1.05</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -27,7 +27,7 @@ __________
         <version>5.1.29</version>
     </dependency>
 
-如果您不使用maven，请手动下载 `mango-1.03.jar <http://search.maven.org/remotecontent?filepath=cc/concurrent/mango/1.03/mango-1.03.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
+如果您不使用maven，请手动下载 `mango-1.05.jar <http://search.maven.org/remotecontent?filepath=cc/concurrent/mango/1.05/mango-1.05.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
 
 
 数据库准备
