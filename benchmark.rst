@@ -7,7 +7,7 @@
 * **64G内存**
 * **db服务器为MySQL**
 
-您可以在 `mango-benchmark <http://github.com/javacc/mango-benchmark>`_ 查看性能测试的源码。
+您可以在 `mango-benchmark <http://github.com/jfaster/mango-benchmark>`_ 查看性能测试的源码。
 
 插入测试
 ________
