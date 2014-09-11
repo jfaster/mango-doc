@@ -10,7 +10,7 @@ CacheHandler接口的主要代码如下:
 
 .. code-block:: java
 
-    package cc.concurrent.mango;
+    package org.jfaster.mango.cache;
 
     import java.util.Map;
     import java.util.Set;
@@ -29,6 +29,7 @@ CacheHandler接口的主要代码如下:
 
     }
 
+
 CacheHandler接口一共有5个接口，它们分别对应着封装缓存的操作:
 
 * ``Object get(String key)`` ，根据单个key值从缓存中查找数据。
@@ -42,9 +43,9 @@ ____________________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.CacheHandler;
+    import org.jfaster.mango.cache.CacheHandler;
 
     import java.util.HashMap;
     import java.util.Map;
@@ -84,7 +85,7 @@ ____________________
         @Override
         public void delete(String key) {
             cache.remove(key);
-        }    
+        }
     }
 
 为了展示的简单性，上面的代码使用了ConcurrentHashMap对CacheHandler接口进行了实现，在生产环境中，您可以通过Memcache或Redis实现acheHandler接口。
@@ -133,7 +134,7 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
     public class User {
 
@@ -167,9 +168,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.*;
+    import org.jfaster.mango.annotation.*;
+    import org.jfaster.mango.cache.Hour;
 
     @DB
     @Cache(prefix = "user_", expire = Hour.class, num = 2)
@@ -190,7 +192,6 @@ ___________
 
     }
 
-
 上面的代码引入了3个新的注解:
 
 * @Cache表示需要使用缓存，参数prefix表示key前缀，比如说传入uid=1，那么缓存中的key就等于user_1，参数expire表示缓存过期时间，Hour.class表示小时，配合后面的参数num＝2表示缓存过期的时间为2小时。
@@ -202,10 +203,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.DriverManagerDataSource;
-    import cc.concurrent.mango.Mango;
+    import org.jfaster.mango.datasource.DriverManagerDataSource;
+    import org.jfaster.mango.operator.Mango;
 
     import javax.sql.DataSource;
 
@@ -272,7 +273,7 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
     public class Message {
 
@@ -315,9 +316,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.*;
+    import org.jfaster.mango.annotation.*;
+    import org.jfaster.mango.cache.Day;
 
     import java.util.List;
 
@@ -347,10 +349,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.DriverManagerDataSource;
-    import cc.concurrent.mango.Mango;
+    import org.jfaster.mango.datasource.DriverManagerDataSource;
+    import org.jfaster.mango.operator.Mango;
 
     import javax.sql.DataSource;
 
@@ -389,7 +391,7 @@ ___________
 
     }
 
-运行上面的代码（运行代码前先保证message表中没有数据，有的话请先truncate掉），得到如下输出::
+运行上面的代码（运行代码前先保证message表中没有数据，有的话请先delete掉），得到如下输出::
 
     [id=1, uid=1, content=hello, id=2, uid=1, content=world, id=3, uid=1, content=boy]
     [id=1, uid=1, content=hello, id=2, uid=1, content=world, id=3, uid=1, content=girl]
@@ -410,9 +412,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.*;
+    import org.jfaster.mango.annotation.*;
+    import org.jfaster.mango.cache.Hour;
 
     import java.util.List;
 
@@ -432,7 +435,7 @@ ___________
 
         @SQL("select uid, name from user where uid=:1")
         public User getUser(@CacheBy int uid);
-        
+
         @SQL("select uid, name from user where uid in (:1)")
         public List<User> getUsers(@CacheBy List<Integer> uids);
 
@@ -445,10 +448,10 @@ ___________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example.cache;
+    package org.jfaster.mango.example.cache;
 
-    import cc.concurrent.mango.DriverManagerDataSource;
-    import cc.concurrent.mango.Mango;
+    import org.jfaster.mango.datasource.DriverManagerDataSource;
+    import org.jfaster.mango.operator.Mango;
 
     import javax.sql.DataSource;
     import java.util.Arrays;
@@ -479,4 +482,4 @@ ___________
 查看完整示例代码
 ________________
 
-和cache集成的所有代码均可以在 `mango-example <https://github.com/javacc/mango-example/tree/master/src/main/java/cc/concurrent/mango/example/cache>`_ 中找到。
+和cache集成的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/cache>`_ 中找到。

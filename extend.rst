@@ -14,7 +14,7 @@ __________
 在调用insert方法时，id变量通过:1引用，content变量则通过:2引用。
 有没有办法对:1与:2进行重命名呢？
 
-答案是使用@cc.concurrent.mango.Rename注解:
+答案是使用@org.jfaster.mango.annotation.Rename注解:
 
 .. code-block:: java
 
@@ -45,39 +45,25 @@ ${...}中还支持运算，支持的运算符有+,-,*,/,%。
 
 需要注意的是，${...}中的参数类型必须为String或Integer或int。
 
-散表
-____
-
-有了 :ref:`表达式` 功能，实现散表就很容易了，请看下面的代码:
-
-.. code-block:: java
-
-    @SQL("select content from card_${:1 % 100} where id=:1")
-    public String getContentById(int id);
-
-这里我们把card表散了100份，分别是card_0，card_1，card_2，...，card_98，card_99。
-当id=1时，使用card_1表，当card=90时，使用card_90表。
-
 全局表名
 ________
 
-我们可以把表名定义在@DB注解的table参数中作为全局表名，这样我们就可以通过${:table}来使用全局表名了，请看下面的示例代码:
+我们可以把表名定义在@DB注解的table参数中作为全局表名，这样我们就可以通过#table来使用全局表名了，请看下面的示例代码:
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example;
+    package org.jfaster.mango.example;
 
-    import cc.concurrent.mango.DB;
-    import cc.concurrent.mango.SQL;
+    import org.jfaster.mango.annotation.DB;
+    import org.jfaster.mango.annotation.SQL;
 
-    @DB(table = "card_")
+    @DB(table = "card")
     public interface CardDao {
 
-        @SQL("select content from ${:table + :1 % 100} where id=:1")
+        @SQL("select content from #table where id=:1")
         public String getContentById(int id);
 
-        @SQL("insert into ${:table + :1 % 100}(id, content) values(:1, :2)")
+        @SQL("insert into #table values(:1, :2)")
         public int insert(int id, String content);
 
     }
-

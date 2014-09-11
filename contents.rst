@@ -9,7 +9,9 @@ mango文档目录
     quickstart    
     db
     cache   
-    datasource
     extend
+    datasource
+    partition
+    transaction
     exception
     qa

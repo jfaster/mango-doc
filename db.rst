@@ -57,9 +57,9 @@ insert操作
     }
 
 请看上面代码。
-@DB注解的全名为@cc.concurrent.mango.DB，dao接口必须使用它来修饰，这样这个dao接口才能被mango框架接受。
-@SQL注解的全名为@cc.concurrent.mango.SQL，它被用来修饰下面的insertUser方法。
-@SQL注解中是一个insert操作的sql语句，与传统jdbc操作使用问号(?)替换参数不同的是，mango使用冒号(:)加数字的方式来替换参数，
+@DB注解的全名为@org.jfaster.mango.annotation.DB，dao接口必须使用它来修饰，这样这个dao接口才能被mango框架接受。
+@SQL注解的全名为@org.jfaster.mango.annotation，它被用来修饰下面的insertUser方法。
+@SQL注解中是一个insert操作的sql语句，与传统jdbc操作使用问号替换参数不同的是，mango使用冒号加数字的方式来替换参数，
 也就是说，调用insertUser方法时，:1将被替换为insertUser方法的第1个参数，也就是name；:2将替换为insertUser方法的第2个参数，也就是age，以此类推。
 
 mango替换参数时，还支持对象属性查找，当然这需要被查找的对象实现对应属性的get方法，向user表插入数据的另一种写法:
@@ -78,7 +78,7 @@ mango替换参数时，还支持对象属性查找，当然这需要被查找的
 上面代码中insertUser方法只有一个User参数，由于User类对所有的属性都实现了get方法，
 所以在调用insertUser方法时，我们可以通过:1.name，:1.age等，访问User对象中的属性值。
 
-如果我们用@cc.concurrent.mango.ReturnGeneratedId注解来修饰insertUser方法，那么insertUser方法的返回值将变为插入数据后的自增id值。
+如果我们用@org.jfaster.mango.annotation.ReturnGeneratedId注解来修饰insertUser方法，那么insertUser方法的返回值将变为插入数据后的自增id值。
 
 .. code-block:: java
 
@@ -200,4 +200,4 @@ ________
 
 batchInsertUserList有且只能有一个参数，参数的类型必须是List或Set或Array。
 
-mango对批量更新的实现并不是简单的一个循环一个一个更新，而是使用了jdbc原生的addBatch()方法，请放心使用。
+需要注意的是，mango内部有两种批量更新的实现，如果批量更新在同一个数据源的同一张表上完成，mango会使用jdbc原生的批量更新方法，否则mango会在内部进行循环更新。

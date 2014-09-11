@@ -17,9 +17,9 @@ __________
 .. code-block:: none
 
     <dependency>
-        <groupId>cc.concurrent</groupId>
+        <groupId>org.jfaster</groupId>
         <artifactId>mango</artifactId>
-        <version>1.05</version>
+        <version>1.12</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -27,7 +27,7 @@ __________
         <version>5.1.29</version>
     </dependency>
 
-如果您不使用maven，请手动下载 `mango-1.05.jar <http://search.maven.org/remotecontent?filepath=cc/concurrent/mango/1.05/mango-1.05.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
+如果您不使用maven，请手动下载 `mango-1.12.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.12/mango-1.12.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
 
 
 数据库准备
@@ -61,18 +61,18 @@ hello_world_table中有id和content两个字段，接下来我们会使用mango�
 创建HelloWorld类
 ________________
 
-在cc.concurrent.mango.example包下创建HelloWorld类:
+在org.jfaster.mango.example包下创建HelloWorld类:
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example;
+    package org.jfaster.mango.example;
 
     public class HelloWorld {
 
         public static void main(String[] args) {
 
         }
-        
+
     }
 
 这个类目前只有一个空的main函数，接下来我们将在HelloWorld类中慢慢添加代码，来实现对数据库的操作。
@@ -86,10 +86,10 @@ __________________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example;
+    package org.jfaster.mango.example;
 
-    import cc.concurrent.mango.DB;
-    import cc.concurrent.mango.SQL;
+    import org.jfaster.mango.annotation.DB;
+    import org.jfaster.mango.annotation.SQL;
 
     public class HelloWorld {
 
@@ -128,12 +128,12 @@ mango对java标准数据源javax.sql.DataSource进行了简单实现，所以这
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example;
+    package org.jfaster.mango.example;
 
-    import cc.concurrent.mango.DB;
-    import cc.concurrent.mango.DriverManagerDataSource;
-    import cc.concurrent.mango.Mango;
-    import cc.concurrent.mango.SQL;
+    import org.jfaster.mango.annotation.DB;
+    import org.jfaster.mango.annotation.SQL;
+    import org.jfaster.mango.datasource.DriverManagerDataSource;
+    import org.jfaster.mango.operator.Mango;
 
     import javax.sql.DataSource;
 
@@ -146,7 +146,7 @@ mango对java标准数据源javax.sql.DataSource进行了简单实现，所以这
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = new Mango(ds); // 使用数据源初始化mango
-            
+
         }
 
         @DB
@@ -160,19 +160,19 @@ mango对java标准数据源javax.sql.DataSource进行了简单实现，所以这
 
         }
 
-    } 
+    }
 
 创建dao并调用插入与查找方法
 ___________________________
 
 .. code-block:: java
 
-    package cc.concurrent.mango.example;
+    package org.jfaster.mango.example;
 
-    import cc.concurrent.mango.DB;
-    import cc.concurrent.mango.DriverManagerDataSource;
-    import cc.concurrent.mango.Mango;
-    import cc.concurrent.mango.SQL;
+    import org.jfaster.mango.annotation.DB;
+    import org.jfaster.mango.annotation.SQL;
+    import org.jfaster.mango.datasource.DriverManagerDataSource;
+    import org.jfaster.mango.operator.Mango;
 
     import javax.sql.DataSource;
 
@@ -204,7 +204,7 @@ ___________________________
 
         }
 
-    } 
+    }
 
 运行上面代码，将在控制台中输出 *hello world* ，同时您的数据库中会被插入一行id=1，content=hello world的数据。
 上面的代码只能正常运行一次，因为hello_world_table表中的id字段被定义为为了主键，所以再插入一次id=1的数据就会抛出异常。
