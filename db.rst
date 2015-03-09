@@ -39,7 +39,14 @@ ________
 更新
 ____
 
-更新包含insert，delete与update这三种操作，它们的返回参数都是int，默认表示有多少行数据受到了影响，insert操作返回的int会有些特别，稍后会做讲解。
+更新主要包含insert，delete与update这三种操作。
+
+通常情况化更新操作支持四种类型的返回值：
+
+1. void或java.lang.Void：不返回值
+2. int或java.lang.Integer：返回有多少行数据受到了影响
+3. long或java.lang.Long：返回有多少行数据受到了影响
+4. boolean或java.lang.Boolean：false表示没有数据受到影响，true表示有一到多行数据受到影响
 
 insert操作
 ^^^^^^^^^^
@@ -52,13 +59,13 @@ insert操作
     public interface UserDao {
 
         @SQL("insert into user(name, age, gender, money, update_time) values(:1, :2, :3, :4, :5)")
-        public int insertUser(String name, int age, boolean gender, long money, Date updateTime);
+        public void insertUser(String name, int age, boolean gender, long money, Date updateTime);
 
     }
 
 请看上面代码。
 @DB注解的全名为@org.jfaster.mango.annotation.DB，dao接口必须使用它来修饰，这样这个dao接口才能被mango框架接受。
-@SQL注解的全名为@org.jfaster.mango.annotation，它被用来修饰下面的insertUser方法。
+@SQL注解的全名为@org.jfaster.mango.annotation.SQL，它被用来修饰下面的insertUser方法。
 @SQL注解中是一个insert操作的sql语句，与传统jdbc操作使用问号替换参数不同的是，mango使用冒号加数字的方式来替换参数，
 也就是说，调用insertUser方法时，:1将被替换为insertUser方法的第1个参数，也就是name；:2将替换为insertUser方法的第2个参数，也就是age，以此类推。
 
@@ -71,14 +78,17 @@ mango替换参数时，还支持对象属性查找，当然这需要被查找的
 
         @SQL("insert into user(name, age, gender, money, update_time) " +
                 "values(:1.name, :1.age, :1.gender, :1.money, :1.updateTime)")
-        public int insertUser(User user);
+        public void insertUser(User user);
 
     }
 
 上面代码中insertUser方法只有一个User参数，由于User类对所有的属性都实现了get方法，
 所以在调用insertUser方法时，我们可以通过:1.name，:1.age等，访问User对象中的属性值。
 
-如果我们用@org.jfaster.mango.annotation.ReturnGeneratedId注解来修饰insertUser方法，那么insertUser方法的返回值将变为插入数据后的自增id值。
+如果我们用@org.jfaster.mango.annotation.ReturnGeneratedId注解来修饰insertUser方法，那么insert操作只能支持两种类型的返回值:
+
+1. int或java.lang.Integer：返回int类型的自增id
+2. long或java.lang.Long：返回long类型的自增id
 
 .. code-block:: java
 
@@ -183,7 +193,15 @@ ____
 批量更新
 ________
 
-批量更新也包含insert，delete与update这三种操作，它们的返回参数都是int[]。
+批量更新主要包含insert，delete与update这三种操作。
+
+批量更新的输入只能有一个参数，参数的类型必须是List或Set或Array。
+
+批量更新的输出支持三种类型的返回值：
+
+1. void或java.lang.Void：不返回值
+2. int或java.lang.Integer：返回累计有多少行数据受到了影响
+3. int[]或java.lang.Integer[]：返回每条更新语句影响到了多少行数据
 
 下面以批量插入为例:
 
@@ -197,7 +215,5 @@ ________
         public int[] batchInsertUserList(List<User> userList);
 
     }
-
-batchInsertUserList有且只能有一个参数，参数的类型必须是List或Set或Array。
 
 需要注意的是，mango内部有两种批量更新的实现，如果批量更新在同一个数据源的同一张表上完成，mango会使用jdbc原生的批量更新方法，否则mango会在内部进行循环更新。
