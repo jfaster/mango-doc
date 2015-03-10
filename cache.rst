@@ -6,11 +6,11 @@ ____________________
 
 mango自身不依赖任何缓存工具，mango对外只提供一个CacheHandler接口，您只需实现CacheHandler接口并在其中填写适当的缓存操作代码（memcached，redis，直接内存等均可），就能享受mango带来的缓存操作便利。
 
-CacheHandler接口的主要代码如下:
+CacheHandler接口的代码如下:
 
 .. code-block:: java
 
-    package org.jfaster.mango.cache;
+    package org.jfaster.mango.operator.cache;
 
     import java.util.Map;
     import java.util.Set;
@@ -29,7 +29,6 @@ CacheHandler接口的主要代码如下:
 
     }
 
-
 CacheHandler接口一共有5个接口，它们分别对应着封装缓存的操作:
 
 * ``Object get(String key)`` ，根据单个key值从缓存中查找数据。
@@ -45,7 +44,7 @@ ____________________
 
     package org.jfaster.mango.example.cache;
 
-    import org.jfaster.mango.cache.CacheHandler;
+    import org.jfaster.mango.operator.cache.CacheHandler;
 
     import java.util.HashMap;
     import java.util.Map;
@@ -88,6 +87,7 @@ ____________________
         }
     }
 
+
 为了展示的简单性，上面的代码使用了ConcurrentHashMap对CacheHandler接口进行了实现，在生产环境中，您可以通过Memcache或Redis实现acheHandler接口。
 
 初始化mango对象
@@ -96,9 +96,10 @@ _______________
 .. code-block:: java
 
     DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-    Mango mango = new Mango(ds, new CacheHandlerImpl()); // 使用数据源和CacheHandlerImpl初始化mango
+    Mango mango = Mango.newInstance(ds); 
+    mango.setDefaultCacheHandler(new CacheHandlerImpl());
 
-我们只需要将一个实现了CacheHandler接口的对象最为Mango构造函数参数传入即可。
+正常初始化mango对象后，只需要通过setDefaultCacheHandler方法传入一个实现了CacheHandler接口的对象即可。
 
 .. _单key取单值:
 
@@ -127,7 +128,7 @@ ___________
       `uid` int(11) NOT NULL,
       `name` varchar(20) NOT NULL,
       PRIMARY KEY (`uid`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 创建User对象
 ^^^^^^^^^^^^
@@ -171,10 +172,10 @@ ___________
     package org.jfaster.mango.example.cache;
 
     import org.jfaster.mango.annotation.*;
-    import org.jfaster.mango.cache.Hour;
+    import org.jfaster.mango.operator.cache.Hour;
 
     @DB
-    @Cache(prefix = "user_", expire = Hour.class, num = 2)
+    @Cache(prefix = "user", expire = Hour.class, num = 2)
     public interface SingleKeySingeValueDao {
 
         @CacheIgnored
@@ -195,8 +196,8 @@ ___________
 上面的代码引入了3个新的注解:
 
 * @Cache表示需要使用缓存，参数prefix表示key前缀，比如说传入uid=1，那么缓存中的key就等于user_1，参数expire表示缓存过期时间，Hour.class表示小时，配合后面的参数num＝2表示缓存过期的时间为2小时。
-* @CacheIgnored表示该方法不操作缓存。
 * @CacheBy用于修饰key后缀参数，在delete，update，getUser方法中@CacheBy都是修饰的uid，所以当传入uid=1时，缓存中的key就等于user_1。
+* @CacheIgnored表示该方法不操作缓存。需要注意的是，如果使用了@Cache注解，@CacheBy和@CacheIgnored二者必须有一个存在。
 
 编写测试代码
 ^^^^^^^^^^^^
@@ -214,11 +215,12 @@ ___________
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
-            String url = "jdbc:mysql://localhost:3306/mango_db";
+            String url = "jdbc:mysql://localhost:3306/mango_example";
             String username = "root"; // 这里请使用您自己的用户名
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-            Mango mango = new Mango(ds, new CacheHandlerImpl()); // 使用数据源和CacheHandlerImpl初始化mango
+            Mango mango = Mango.newInstance(ds);
+            mango.setDefaultCacheHandler(new CacheHandlerImpl());
 
             SingleKeySingeValueDao dao = mango.create(SingleKeySingeValueDao.class);
             dao.insert(1, "ash");
@@ -266,7 +268,7 @@ ___________
       `content` varchar(100) NOT NULL,
       PRIMARY KEY (`id`),
       KEY `key_uid` (`uid`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 创建Message对象
 ^^^^^^^^^^^^^^^
@@ -319,12 +321,12 @@ ___________
     package org.jfaster.mango.example.cache;
 
     import org.jfaster.mango.annotation.*;
-    import org.jfaster.mango.cache.Day;
+    import org.jfaster.mango.operator.cache.Day;
 
     import java.util.List;
 
     @DB
-    @Cache(prefix = "message_", expire = Day.class)
+    @Cache(prefix = "message", expire = Day.class)
     public interface SingleKeyMultiValuesDao {
 
         @ReturnGeneratedId
@@ -360,11 +362,12 @@ ___________
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
-            String url = "jdbc:mysql://localhost:3306/mango_db";
+            String url = "jdbc:mysql://localhost:3306/mango_example";
             String username = "root"; // 这里请使用您自己的用户名
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-            Mango mango = new Mango(ds, new CacheHandlerImpl()); // 使用数据源和CacheHandlerImpl初始化mango
+            Mango mango = Mango.newInstance(ds);
+            mango.setDefaultCacheHandler(new CacheHandlerImpl());
 
             SingleKeyMultiValuesDao dao = mango.create(SingleKeyMultiValuesDao.class);
             int uid = 1;
@@ -415,12 +418,12 @@ ___________
     package org.jfaster.mango.example.cache;
 
     import org.jfaster.mango.annotation.*;
-    import org.jfaster.mango.cache.Hour;
+    import org.jfaster.mango.operator.cache.Hour;
 
     import java.util.List;
 
     @DB
-    @Cache(prefix = "user_", expire = Hour.class, num = 2)
+    @Cache(prefix = "user", expire = Hour.class, num = 2)
     public interface MultiKeysMultiValuesDao {
 
         @CacheIgnored
@@ -460,24 +463,39 @@ ___________
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
-            String url = "jdbc:mysql://localhost:3306/mango_db";
+            String url = "jdbc:mysql://localhost:3306/mango_example";
             String username = "root"; // 这里请使用您自己的用户名
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-            Mango mango = new Mango(ds, new CacheHandlerImpl()); // 使用数据源和CacheHandlerImpl初始化mango
+            Mango mango = Mango.newInstance(ds);
+            mango.setDefaultCacheHandler(new CacheHandlerImpl());
 
             MultiKeysMultiValuesDao dao = mango.create(MultiKeysMultiValuesDao.class);
-            dao.insert(1, "ash");
-            dao.insert(2, "lucy");
-            dao.insert(3, "lily");
-            System.out.println(dao.getUsers(Arrays.asList(1, 2, 3)));
+            dao.insert(100, "ash");
+            dao.insert(200, "lucy");
+            dao.insert(300, "lily");
+            System.out.println(dao.getUsers(Arrays.asList(100, 200, 300)));
         }
 
     }
 
 运行上面的代码（运行代码前先保证user表中没有数据），得到如下输出::
 
-    [uid=1, name=ash, uid=2, name=lucy, uid=3, name=lily]
+    [uid=100, name=ash, uid=200, name=lucy, uid=300, name=lily]
+
+多个参数组成单个key
+___________________
+
+考虑上面的user表，如果我们需要通过uid和name两个字段来作为缓存呢？
+
+下面两种方式都能实现::
+
+    @SQL("select uid, name from user where uid=:1 and name=:2")
+    public User getByUidAndName(@CacheBy int uid, @CacheBy String name);
+
+    @SQL("select uid, name from user where uid=:1.uid and name=:1.name")
+    public User getByUidAndName(@CacheBy("uid,name") User user);
+
 
 查看完整示例代码
 ________________

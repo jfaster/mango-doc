@@ -9,9 +9,9 @@ mango文档目录
     quickstart    
     db
     cache   
-    extend
+    honey
+    dynamic
+    functional
     datasource
     partition
     transaction
-    exception
-    qa

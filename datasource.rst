@@ -14,14 +14,14 @@ ________
 .. code-block:: java
 
     DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-    Mango mango = new Mango(new SimpleDataSourceFactory(ds));
+    Mango mango = Mango.newInstance(new SimpleDataSourceFactory(ds));
 
 或者也可以简写为:
 
 .. code-block:: java
 
     DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-    Mango mango = new Mango(ds);
+    Mango mango = Mango.newInstance(ds);;
 
 单数据源读写分离
 ________________
@@ -40,7 +40,7 @@ ________________
         slaves.add(new DriverManagerDataSource(driverClassName, url, username, password));
     }
     DataSourceFactory dsf = new MasterSlaveDataSourceFactory(master, slaves);
-    Mango mango = new Mango(dsf);
+    Mango mango = Mango.newInstance(dsf);
 
 多数据源
 ________
@@ -55,7 +55,7 @@ ________
     factories.put("dataSource1", new DriverManagerDataSource(driverClassName1, url1, username1, password1));
     factories.put("dataSource2", new DriverManagerDataSource(driverClassName2, url2, username2, password2));
     DataSourceFactory dsf = new MultipleDataSourceFactory(factories);
-    Mango mango = new Mango(dsf);
+    Mango mango = Mango.newInstance(dsf);
 
 在DAO中如果要使用数据源dataSource1，只需 ``@DB(dataSource = "dataSource1")`` 即可。
 
@@ -81,4 +81,4 @@ ________________
         factories.put("dataSource" + i, dsf);
     }
     DataSourceFactory dsf = new MultipleDataSourceFactory(factories);
-    Mango mango = new Mango(dsf);
+    Mango mango = Mango.newInstance(dsf);
