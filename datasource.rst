@@ -42,6 +42,8 @@ ________________
     DataSourceFactory dsf = new MasterSlaveDataSourceFactory(master, slaves);
     Mango mango = Mango.newInstance(dsf);
 
+.. _多数据源:
+
 多数据源
 ________
 

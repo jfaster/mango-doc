@@ -1,6 +1,8 @@
 语法蜜糖
 ========
 
+.. _全局表名:
+
 全局表名
 ________
 
@@ -31,7 +33,7 @@ __________
 
 .. code-block:: java
 
-	@SQL("insert into card(id, content) values(:1, :2)")
+    @SQL("insert into card(id, content) values(:1, :2)")
     public int insert(int id, String content);
 
 在调用insert方法时，id变量通过:1引用，content变量则通过:2引用。

@@ -7,11 +7,11 @@ mango文档目录
     :maxdepth: 2
 
     quickstart    
-    db
-    cache   
+    db   
     honey
     dynamic
     functional
+    cache
     datasource
     partition
     transaction
