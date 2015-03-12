@@ -19,7 +19,7 @@ __________
     <dependency>
         <groupId>org.jfaster</groupId>
         <artifactId>mango</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.4</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -27,7 +27,7 @@ __________
         <version>5.1.29</version>
     </dependency>
 
-如果您不使用maven，请手动下载 `mango-1.2.3.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.2.3/mango-1.2.3.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
+如果您不使用maven，请手动下载 `mango-1.2.4.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.2.4/mango-1.2.4.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
 
 
 数据库准备
@@ -109,7 +109,7 @@ __________________
 
     }
 
-如果您对FruitDao接口有疑问，请查阅 :ref:`db操作` 。
+如果您对FruitDao接口有疑问，请查阅 :ref:`基本操作` 。
 
 构造数据源并初始化mango对象
 ___________________________

@@ -7,7 +7,7 @@ mango文档目录
     :maxdepth: 2
 
     quickstart    
-    db   
+    basic   
     honey
     dynamic
     functional
