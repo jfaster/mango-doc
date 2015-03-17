@@ -58,11 +58,11 @@ fruit表中有id，name，num三个字段，其中id是自增主键，不用关�
 创建HelloWorld类
 ________________
 
-在org.jfaster.mango.example包下创建HelloWorld类:
+在org.jfaster.mango.example.quickstar包下创建HelloWorld类:
 
 .. code-block:: java
 
-    package org.jfaster.mango.example;
+    package org.jfaster.mango.example.quickstar;
 
     public class HelloWorld {
 
@@ -83,7 +83,7 @@ __________________
 
 .. code-block:: java
 
-    package org.jfaster.mango.example;
+    package org.jfaster.mango.example.quickstar;
 
     import org.jfaster.mango.annotation.DB;
     import org.jfaster.mango.annotation.SQL;
@@ -109,7 +109,7 @@ __________________
 
     }
 
-如果您对FruitDao接口有疑问，请查阅 :ref:`基本操作` 。
+如果您对FruitDao接口有疑问，请进一步阅读 :ref:`基本操作` 。
 
 构造数据源并初始化mango对象
 ___________________________
@@ -127,7 +127,7 @@ mango框架对java标准数据源javax.sql.DataSource进行了简单实现，所
 
 .. code-block:: java
 
-    package org.jfaster.mango.example;
+    package org.jfaster.mango.example.quickstar;
 
     import org.jfaster.mango.annotation.DB;
     import org.jfaster.mango.annotation.SQL;
@@ -167,7 +167,7 @@ ___________________________
 
 .. code-block:: java
 
-    package org.jfaster.mango.example;
+    package org.jfaster.mango.example.quickstar;
 
     import org.jfaster.mango.annotation.DB;
     import org.jfaster.mango.annotation.SQL;
@@ -211,3 +211,8 @@ ___________________________
 运行上面代码，控制台中将输出 *7* ，同时您的数据库中会被插入一行name=apple，num=7的数据。
 
 如果再运行一次，控制台中将输出 *14* ，同时您的数据库中会再被插入一行name=apple，num=7的数据。
+
+查看完整示例代码
+________________
+
+和 **快速开始** 相关的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/quickstart>`_ 中找到。

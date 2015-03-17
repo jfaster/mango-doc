@@ -8,7 +8,6 @@ mango文档目录
 
     quickstart    
     basic   
-    honey
     dynamic
     functional
     cache
