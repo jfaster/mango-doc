@@ -4,7 +4,7 @@ mango文档目录
 =============
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     quickstart    
     basic   
