@@ -2,7 +2,7 @@
 欢迎使用mango
 =============
 
-mango的中文名是“芒果”，它是一个轻量级数据层访问框架，它使用注解的形式将db操作与cache操作完美的结合起来，极大的缩减了数据层代码书写量，使开发人员能更好的专注业务逻辑开发。
+**mango的中文名是“芒果”，它是一个轻量级极速数据层访问框架。目前已有十多个大型线上项目在使用mango，在某一支付系统中，更是利用mango，承载了每秒5万的支付下单请求。**
 
 下面是mango的一些特性:
 
@@ -30,7 +30,17 @@ _________
         <version>1.3.2</version>
     </dependency>
 
+
 需要注意的是，只使用mango是无法连接数据库成功的，对于连接不同的数据库，您还需要添加相应的JDBC驱动，以连接MySQL数据库为例，您还需要用到 `mysql-connector-java <http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22mysql%22%20AND%20a%3A%22mysql-connector-java%22>`_ 。
+
+.. code-block:: none
+
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.29</version>
+    </dependency>
+    
 
 如何使用mango
 _____________
