@@ -4,7 +4,7 @@
 
 **mango的中文名是“芒果”，它是一个轻量级极速数据层访问框架。目前已有十多个大型线上项目在使用mango，在某一支付系统中，更是利用mango，承载了每秒5万的支付下单请求。**
 
-下面是mango的一些特性:
+**下面是mango的一些特性:**
 
 * **采用接口与注解的形式定义DAO，完美结合db与cache操作**
 * **轻量高效，具有和直接使用jdbc同样的响应速度**
@@ -40,7 +40,7 @@ _________
         <artifactId>mysql-connector-java</artifactId>
         <version>5.1.29</version>
     </dependency>
-    
+
 
 如何使用mango
 _____________
