@@ -1,57 +1,48 @@
 集成cache
 =========
 
-CacheHandler接口简介
-____________________
+SimpleCacheHandler抽象类简介
+____________________________
 
-mango自身不依赖任何缓存工具，mango对外只提供一个CacheHandler接口，您只需实现CacheHandler接口并在其中填写适当的缓存操作代码（memcached，redis，直接内存等均可），就能享受mango带来的缓存操作便利。
+mango自身不依赖任何缓存工具，mango对外提供SimpleCacheHandler抽象类，您只需实现SimpleCacheHandler抽象类，并在其中填写适当的缓存操作代码（memcached，redis，直接内存等均可），就能享受mango带来的缓存操作便利。
 
-CacheHandler接口的代码如下:
+SimpleCacheHandler抽象类需要实现的抽象方法如下:
 
 .. code-block:: java
 
-    package org.jfaster.mango.operator.cache;
+    public abstract Object get(String key);
 
-    import java.util.Map;
-    import java.util.Set;
+    public abstract Map<String, Object> getBulk(Set<String> keys);
 
-    public interface CacheHandler {
+    public abstract void set(String key, Object value, int exptimeSeconds);
 
-        public Object get(String key);
+    public abstract void delete(String key);
 
-        public Map<String, Object> getBulk(Set<String> keys);
 
-        public void set(String key, Object value, int expires);
-
-        public void delete(Set<String> keys);
-
-        public void delete(String key);
-
-    }
-
-CacheHandler接口一共有5个接口，它们分别对应着封装缓存的操作:
+CacheHandler抽象类一共有4个需要实现的抽象方法，它们分别对应着封装缓存的操作:
 
 * ``Object get(String key)`` ，根据单个key值从缓存中查找数据。
 * ``Map<String, Object> getBulk(Set<String> keys)`` ，根据多个key值从缓存中查找数据，返回key-value对应的map。
-* ``void set(String key, Object value, int expires)`` ，向缓存中设置数据，其中expires为缓存过期时间，单位为秒。
-* ``void delete(Set<String> keys)`` ，根据多个key值从缓存中删除数据。
+* ``void set(String key, Object value, int exptimeSeconds)``，向缓存中设置数据，其中exptimeSeconds为缓存失效时间，单位为秒。
 * ``void delete(String key)`` ，根据单个key值从缓存中删除数据。
 
-实现CacheHandler接口
-____________________
+实现SimpleCacheHandler抽象类
+____________________________
+
+为了展示的简单性，下面的代码使用了ConcurrentHashMap对SimpleCacheHandler抽象类进行了实现，在生产环境中，您可以通过Memcache或Redis实现SimpleCacheHandler抽象类。
 
 .. code-block:: java
 
     package org.jfaster.mango.example.cache;
 
-    import org.jfaster.mango.operator.cache.CacheHandler;
+    import org.jfaster.mango.operator.cache.SimpleCacheHandler;
 
     import java.util.HashMap;
     import java.util.Map;
     import java.util.Set;
     import java.util.concurrent.ConcurrentHashMap;
 
-    public class CacheHandlerImpl implements CacheHandler {
+    public class CacheHandlerImpl extends SimpleCacheHandler {
 
         private ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<String, Object>();
 
@@ -75,20 +66,11 @@ ____________________
         }
 
         @Override
-        public void delete(Set<String> keys) {
-            for (String key : keys) {
-                delete(key);
-            }
-        }
-
-        @Override
         public void delete(String key) {
             cache.remove(key);
         }
+
     }
-
-
-为了展示的简单性，上面的代码使用了ConcurrentHashMap对CacheHandler接口进行了实现，在生产环境中，您可以通过Memcache或Redis实现acheHandler接口。
 
 初始化mango对象
 _______________
