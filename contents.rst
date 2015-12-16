@@ -8,6 +8,7 @@
 
     quickstart    
     basic   
+    binding
     dynamic
     functional
     cache
