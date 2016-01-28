@@ -9,6 +9,7 @@
     quickstart    
     basic   
     binding
+    mapping
     dynamic
     functional
     cache
