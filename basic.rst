@@ -64,28 +64,14 @@ insert操作
     }
 
 请看上面代码。
-@DB注解的全名为@org.jfaster.mango.annotation.DB，dao接口必须使用它来修饰，这样这个dao接口才能被mango框架接受。
-@SQL注解的全名为@org.jfaster.mango.annotation.SQL，它被用来修饰下面的insertUser方法。
-@SQL注解中是一个insert操作的sql语句，与传统jdbc操作使用问号替换参数不同的是，mango使用冒号加数字的方式来替换参数，
-也就是说，调用insertUser方法时，:1将被替换为insertUser方法的第1个参数，也就是name；:2将替换为insertUser方法的第2个参数，也就是age，以此类推。
 
-mango替换参数时，还支持对象属性查找，当然这需要被查找的对象实现对应属性的get方法，向user表插入数据的另一种写法:
+@DB注解的全名为 **@org.jfaster.mango.annotation.DB** ，dao接口必须使用它来修饰，这样这个dao接口才能被mango框架接受。
 
-.. code-block:: java
+@SQL注解的全名为 **@org.jfaster.mango.annotation.SQL** ，它被用来修饰下面的insertUser方法。
 
-    @DB
-    public interface UserDao {
+@SQL注解中是一个insert操作的sql语句，需要注意的是sql使用了 :ref:`序号绑定` 来传入参数，在调用insertUser方法时，:1将被替换为insertUser方法的第1个参数，也就是name；:2将替换为insertUser方法的第2个参数，也就是age，以此类推。序号绑定只是mango众多参数绑定方式中的一种，点击 :ref:`参数绑定` 可以了解到更多相关内容。
 
-        @SQL("insert into user(name, age, gender, money, update_time) " +
-                "values(:1.name, :1.age, :1.gender, :1.money, :1.updateTime)")
-        public void insertUser(User user);
-
-    }
-
-上面代码中insertUser方法只有一个User参数，由于User类对所有的属性都实现了get方法，
-所以在调用insertUser方法时，我们可以通过:1.name，:1.age等，访问User对象中的属性值。
-
-如果我们用@org.jfaster.mango.annotation.ReturnGeneratedId注解来修饰insertUser方法，那么insert操作只能支持两种类型的返回值:
+如果我们用注解 **@org.jfaster.mango.annotation.ReturnGeneratedId** 来修饰insertUser方法，那么insert操作只能支持两种类型的返回值:
 
 1. int或java.lang.Integer：返回int类型的自增id
 2. long或java.lang.Long：返回long类型的自增id
@@ -160,7 +146,7 @@ ____
 
     }
 
-需要注意的是user表中的update_time字段会被映射到User对象的updateTime属性中。
+需要注意的是user表中的id, name, age, gender, money, update_time字段会分别被被映射到User对象的id, name, age, gender, money, updateTime属性中。点击 :ref:`查询映射` 可以了解到更多相关内容。
 
 查询多行数据
 ^^^^^^^^^^^^

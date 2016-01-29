@@ -1,7 +1,11 @@
+.. _参数绑定:
+
 参数绑定
 ========
 
 参数绑定指的是：将接口参数绑定到SQL指定的位置中，也即向SQL中传入参数。
+
+.. _序号绑定:
 
 序号绑定
 ________
@@ -14,6 +18,17 @@ ________
 
     @SQL("insert into binding_user(uid, name, age) values(:1, :2, :3)")
     public void addUserByIndex(int uid, String name, int age);
+
+请看上面的代码，当调用addUserByIndex方法时，:1将被替换为addUserByIndex方法的第1个参数，也就是uid；:2将替换为addUserByIndex方法的第2个参数，也就是name，:3将替换为addUserByIndex方法的第3个参数，也就是age。
+
+最终mango内部将执行如下的JDBC代码绑定参数：
+
+.. code-block:: java
+
+    ps = conn.prepareStatement("insert into binding_user(uid, name, age) values(?, ?, ?)");
+    ps.setInt(1, uid);
+    ps.setString(2, name);
+    ps.setInt(3, age);
 
 重命名绑定
 __________
