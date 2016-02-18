@@ -16,3 +16,4 @@
     datasource
     partition
     transaction
+    spring
