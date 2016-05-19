@@ -57,10 +57,10 @@ ________________________
 
 .. code-block:: java
 
-    @SQL("select id, name, user_age, update_time from mapping_user where id = :1")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id = :1")
     public MappingUser getMappingUserById(int id);
 
-    @SQL("select id, name, user_age, update_time from mapping_user where id in (:1)")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id in (:1)")
     public List<MappingUser> getMappingUsersById(List<Integer> ids);
 
 自定义映射规则
@@ -89,14 +89,14 @@ ________________________
             @Result(column = "id", property = "userId"),
             @Result(column = "name", property = "userName")
     })
-    @SQL("select id, name, user_age, update_time from mapping_user where id = :1")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id = :1")
     public MappingUser2 getMappingUser2ById(int id);
 
     @Results({
             @Result(column = "id", property = "userId"),
             @Result(column = "name", property = "userName")
     })
-    @SQL("select id, name, user_age, update_time from mapping_user where id in (:1)")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id in (:1)")
     public List<MappingUser2> getMappingUsers2ById(List<Integer> ids);
 
 手动映射
@@ -116,8 +116,8 @@ mango提供了抽象类 **org.jfaster.mango.jdbc.AbstractRowMapper**，继承该
             MappingUser u = new MappingUser();
             u.setId(rs.getInt("id"));
             u.setName(rs.getString("name"));
-            u.setUserAge(rs.getInt("user_age"));
-            u.setUpdateTime(rs.getTimestamp("update_time"));
+            u.setUserAge(rs.getInt("userAge"));
+            u.setUpdateTime(rs.getTimestamp("updateTime"));
             return u;
         }
 
@@ -126,11 +126,11 @@ mango提供了抽象类 **org.jfaster.mango.jdbc.AbstractRowMapper**，继承该
 .. code-block:: java
 
     @Mapper(UserMapper.class)
-    @SQL("select id, name, user_age, update_time from mapping_user where id = :1")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id = :1")
     public MappingUser getMappingUserByIdMapper(int id);
     
     @Mapper(UserMapper.class)
-    @SQL("select id, name, user_age, update_time from mapping_user where id in (:1)")
+    @SQL("select id, name, userAge, updateTime from mapping_user where id in (:1)")
     public List<MappingUser> getMappingUsersByIdMapper(List<Integer> ids);
 
 查看完整示例代码
