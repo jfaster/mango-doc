@@ -146,10 +146,8 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    'index': ['download.html', 'sourcelink.html'], 
-    'contents': ['download.html', 'sourcelink.html'], 
-    'benchmark': ['download.html', 'sourcelink.html'], 
-    'develop': ['download.html', 'sourcelink.html'], 
+    'index': ['download.html', 'contact.html', 'sourcelink.html'], 
+    'contents': ['download.html', 'contact.html', 'sourcelink.html'], 
     '**': ['localtoc.html', 'download.html', 'sourcelink.html']}
 
 # Additional templates that should be rendered to pages, maps page names to

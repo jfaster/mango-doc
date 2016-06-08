@@ -6,15 +6,25 @@
 
 下面是mango的一些特性:
 
+* 超高性能，响应速度接近直接使用JDBC
 * 采用接口与注解的形式定义DAO，完美结合db与cache操作
-* 轻量高效，具有和直接使用jdbc同样的响应速度
 * 支持动态sql，可以构造任意复杂的sql语句
 * 支持多数据源，分表，分库，事务
 * 内嵌“函数式调用”功能，能将任意复杂的对象，映射到数据库的表中
 * 高效详细的log统计，方便开发者随时了解自己的系统
-* 超级人性化的异常提示，使用简单，学习成本低
 * 独立jar包，不依赖其它jar包
 * 提供便捷的spring插件，与spring无缝集成
+
+性能测试
+________
+
+我们使用由甲骨文JVM性能团队提供的工具 `JMH <http://openjdk.java.net/projects/code-tools/jmh>`_ 对mybatis，spring-jdbc，mango和直接使用jdbc进行了性能测试。您可以checkout性能测试源码 `mango-benchmark <https://github.com/jfaster/mango-benchmark>`_ 查看测试细节并自行运行获得测试结果。
+
+.. image:: _static/benchmark.png
+
+* 1次 **Query Cycle** 被定义为简单执行1次查询：``select id, name, age from user where id = ?``
+* 1次 **Update Cycle** 被定义为简单执行1次更新：``update user set age = ? where id = ?``
+
 
 获得mango
 _________
@@ -49,6 +59,3 @@ _____________
 您可以去 :ref:`快速开始` 实现并运行第一个mango程序
 
 您也可以去 :ref:`文档目录` 查看所有的文档
-
-您还可以通过电子邮件 **mango@jfaster.org** 联系我，我们可以一起讨论关于mango的一切问题。
-
