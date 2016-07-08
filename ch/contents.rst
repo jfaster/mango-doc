@@ -10,10 +10,10 @@
     basic   
     binding
     mapping
-    dynamic
-    functional
-    cache
     datasource
-    partition
+    sharding
+    functional
+    dynamic
+    cache
     transaction
     spring
