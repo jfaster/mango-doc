@@ -10,12 +10,13 @@ ________________
 
 .. code-block:: sql
 
-	CREATE TABLE `teacher` (
-	  `id` int(11) NOT NULL AUTO_INCREMENT,
-	  `name` varchar(200) NOT NULL,
-	  `student_ids` varchar(1000) NOT NULL,
-	  PRIMARY KEY (`id`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    DROP TABLE IF EXISTS `teacher`;
+    CREATE TABLE `teacher` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `name` varchar(200) NOT NULL,
+      `student_ids` varchar(1000) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 与teacher表对应的java类:
 
@@ -84,12 +85,13 @@ ________________
 
 .. code-block:: sql
 
-	CREATE TABLE `person` (
-	  `id` int(11) NOT NULL AUTO_INCREMENT,
-	  `name` varchar(200) NOT NULL,
-	  `gender` int(11) NOT NULL,
-	  PRIMARY KEY (`id`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    DROP TABLE IF EXISTS `person`;
+    CREATE TABLE `person` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `name` varchar(200) NOT NULL,
+      `gender` int(11) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 与person表对应的java类:
 
@@ -165,12 +167,13 @@ __________________
 
 .. code-block:: sql
 
-	CREATE TABLE `card` (
-	  `id` int(11) NOT NULL AUTO_INCREMENT,
-	  `name` varchar(200) NOT NULL,
-	  `sub_card` varchar(1000) NOT NULL,
-	  PRIMARY KEY (`id`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    DROP TABLE IF EXISTS `card`;
+    CREATE TABLE `card` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `name` varchar(200) NOT NULL,
+      `sub_card` varchar(1000) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 与card表对应的java类:
 
@@ -239,7 +242,7 @@ CardDao类:
 .. image:: _static/functional-gson2object.png
     :width: 800px
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和函数式调用的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/functional>`_ 中找到。
+**函数式调用** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/functional>`_ 中找到。

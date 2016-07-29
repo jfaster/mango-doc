@@ -99,17 +99,9 @@ __________________
 上面的实例分为spring配置文件与代码两部分。在spring配置文件中只有扫描DAO类的配置，并多了一个对扫描器MangoDaoScanner的factoryBeanClass属性的配置，factoryBeanClass的值是一个自定义的类MyMangoFactoryBean。代码部分，自定义类MyMangoFactoryBean继承了mango自带的抽象类org.jfaster.mango.plugin.spring.AbstractMangoFactoryBean，MyMangoFactoryBean通过实现createMango方法，实现用代码创建数据源工厂与mango对象。
 
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和集成到spring的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/spring>`_ 中找到。
-
-
-
-
-
-
-
-
+**集成到spring** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/spring>`_ 中找到。
 
 

@@ -10,6 +10,7 @@ ________
 
 .. code-block:: sql
 
+    DROP TABLE IF EXISTS `user`;
     CREATE TABLE `user` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `name` varchar(25) DEFAULT NULL,
@@ -204,28 +205,7 @@ ________
 
 需要注意的是，mango内部有两种批量更新的实现，如果批量更新在同一个数据源的同一张表上完成，mango会使用jdbc原生的批量更新方法，否则mango会在内部进行循环更新。
 
-.. _全局表名:
+查看完整示例代码和表结构
+________________________
 
-全局表名
-________
-
-我们可以把表名定义在@DB注解的table参数中作为全局表名，这样我们就可以通过#table来使用全局表名了，请看下面的示例代码:
-
-.. code-block:: java
-
-    package org.jfaster.mango.example;
-
-    import org.jfaster.mango.annotation.DB;
-    import org.jfaster.mango.annotation.SQL;
-
-    @DB(table = "card")
-    public interface CardDao {
-
-        @SQL("select content from #table where id=:1")
-        public String getContentById(int id);
-
-        @SQL("insert into #table values(:1, :2)")
-        public int insert(int id, String content);
-
-    }
-
+**基本操作** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/basic>`_ 中找到。

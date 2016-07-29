@@ -212,7 +212,7 @@ ___________________________
 
 如果再运行一次，控制台中将输出 *14* ，同时您的数据库中会再被插入一行name=apple，num=7的数据。
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和 **快速开始** 相关的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/quickstart>`_ 中找到。
+**快速开始** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/quickstart>`_ 中找到。

@@ -264,22 +264,8 @@ ______________
 
 上面的代码中，``addOrder(@ShardingBy("uid") Order order)`` 方法与 ``getOrdersByUid(@ShardingBy int uid)`` 方法使用了以uid作为参数的分片策略OrderUidShardingStrategy，而 ``getOrderById(@ShardingBy String id)`` 方法则使用了以id作为参数的分片策略OrderIdShardingStrategy。
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和 **表分片与数据库分片** 相关的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/sharding>`_ 中找到。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**表分片与数据库分片** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/sharding>`_ 中找到。
 

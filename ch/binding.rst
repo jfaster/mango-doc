@@ -104,8 +104,8 @@ ________
     @SQL("insert into binding_user(uid, name, age) values(:myuid, :name, :age)")
     public void addUserByMix(@Rename("myuid") int uid, BindingUser user);
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和参数绑定的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/binding>`_ 中找到。
+**参数绑定** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/binding>`_ 中找到。
 

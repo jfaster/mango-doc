@@ -133,39 +133,8 @@ mango提供了抽象类 **org.jfaster.mango.jdbc.AbstractRowMapper**，继承该
     @SQL("select id, name, user_age, update_time from mapping_user where id in (:1)")
     public List<MappingUser> getMappingUsersByIdMapper(List<Integer> ids);
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和查询映射的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/mapping>`_ 中找到。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**查询映射** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/mapping>`_ 中找到。
 

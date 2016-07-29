@@ -106,6 +106,7 @@ ___________
 
 .. code-block:: sql
 
+    DROP TABLE IF EXISTS `user`;
     CREATE TABLE `user` (
       `uid` int(11) NOT NULL,
       `name` varchar(20) NOT NULL,
@@ -244,6 +245,7 @@ ___________
 
 .. code-block:: sql
 
+    DROP TABLE IF EXISTS `message`;
     CREATE TABLE `message` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `uid` int(11) NOT NULL,
@@ -479,7 +481,7 @@ ___________________
     public User getByUidAndName(@CacheBy("uid,name") User user);
 
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和cache集成的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/cache>`_ 中找到。
+**cache集成** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/cache>`_ 中找到。

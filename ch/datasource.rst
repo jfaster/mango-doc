@@ -194,26 +194,8 @@ MultipleDatabaseDataSourceFactory即多数据库数据源工厂。应用服务�
 
 这样我们就是实现了BlogDao操作主从数据库中的blog表，而CommentDao则操作单一数据库中的comment表
 
-查看完整示例代码
-________________
+查看完整示例代码和表结构
+________________________
 
-和数据源工厂的所有代码均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/datasource>`_ 中找到。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**数据源工厂** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/datasource>`_ 中找到。
 
