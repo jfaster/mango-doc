@@ -10,9 +10,9 @@ SimpleCacheHandler抽象类需要实现的抽象方法如下:
 
 .. code-block:: java
 
-    public abstract Object get(String key);
+    public abstract Object get(String key, Type type);
 
-    public abstract Map<String, Object> getBulk(Set<String> keys);
+    public abstract Map<String, Object> getBulk(Set<String> keys, Type type);
 
     public abstract void set(String key, Object value, int exptimeSeconds);
 
@@ -21,15 +21,69 @@ SimpleCacheHandler抽象类需要实现的抽象方法如下:
 
 CacheHandler抽象类一共有4个需要实现的抽象方法，它们分别对应着封装缓存的操作:
 
-* ``Object get(String key)`` ，根据单个key值从缓存中查找数据。
-* ``Map<String, Object> getBulk(Set<String> keys)`` ，根据多个key值从缓存中查找数据，返回key-value对应的map。
+* ``Object get(String key, Type type)`` ，根据单个key值从缓存中查找数据，type为返回对象的类型
+* ``Map<String, Object> getBulk(Set<String> keys, Type type)`` ，根据多个key值从缓存中查找数据，返回key-value对应的map，type为map中value对象的类型
 * ``void set(String key, Object value, int exptimeSeconds)``，向缓存中设置数据，其中exptimeSeconds为缓存失效时间，单位为秒。
 * ``void delete(String key)`` ，根据单个key值从缓存中删除数据。
 
 实现SimpleCacheHandler抽象类
 ____________________________
 
-为了展示的简单性，下面的代码使用了ConcurrentHashMap对SimpleCacheHandler抽象类进行了实现，在生产环境中，您可以通过Memcache或Redis实现SimpleCacheHandler抽象类。
+一般情况下，我们会使用Redis或Memcached等作为缓存服务，缓存热点数据。这里为了演示的简单，我们使用JDK中的ConcurrentHashMap模拟Redis与Memcached服务，来实现SimpleCacheHandler抽象类。
+
+模拟Redis实现SimpleCacheHandler抽象类
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: java
+
+    package org.jfaster.mango.example.cache;
+
+    import com.alibaba.fastjson.JSON;
+    import org.jfaster.mango.operator.cache.SimpleCacheHandler;
+
+    import java.lang.reflect.Type;
+    import java.util.HashMap;
+    import java.util.Map;
+    import java.util.Set;
+    import java.util.concurrent.ConcurrentHashMap;
+
+    public class MockRedisHandler extends SimpleCacheHandler {
+
+        private ConcurrentHashMap<String, String> redis = new ConcurrentHashMap<String, String>();
+
+        @Override
+        public Object get(String key, Type type) {
+            String json = redis.get(key);
+            Object value = JSON.parseObject(json, type); // json数据反序列化为java对象
+            return value;
+        }
+
+        @Override
+        public Map<String, Object> getBulk(Set<String> keys, Type type) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            for (String key : keys) {
+                map.put(key, redis.get(key));
+            }
+            return map;
+        }
+
+        @Override
+        public void set(String key, Object value, int expires) {
+            String json = JSON.toJSONString(value); // java对象序列化为json数据
+            redis.put(key, json);
+        }
+
+        @Override
+        public void delete(String key) {
+            redis.remove(key);
+        }
+
+    }
+
+Redis服务器在进行key-value存储时，value的类型是字符串，同时Redis客户端一般不会自动进行序列化和反序列化，所以上面的代码中，我们先将java对象序列化成json字符串再写入Redis服务器，同理，从Redis服务器读取数据后，我们需要讲json字符串反序列化成java对象。
+
+模拟Memcached实现SimpleCacheHandler抽象类
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: java
 
@@ -37,40 +91,44 @@ ____________________________
 
     import org.jfaster.mango.operator.cache.SimpleCacheHandler;
 
+    import java.lang.reflect.Type;
     import java.util.HashMap;
     import java.util.Map;
     import java.util.Set;
     import java.util.concurrent.ConcurrentHashMap;
 
-    public class CacheHandlerImpl extends SimpleCacheHandler {
+    public class MockMemcachedHandler extends SimpleCacheHandler {
 
-        private ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<String, Object>();
+        private ConcurrentHashMap<String, Object> memcached = new ConcurrentHashMap<String, Object>();
 
         @Override
-        public Object get(String key) {
-            return cache.get(key);
+        public Object get(String key, Type type) {
+            return memcached.get(key);
         }
 
         @Override
-        public Map<String, Object> getBulk(Set<String> keys) {
+        public Map<String, Object> getBulk(Set<String> keys, Type type) {
             Map<String, Object> map = new HashMap<String, Object>();
             for (String key : keys) {
-                map.put(key, cache.get(key));
+                map.put(key, memcached.get(key));
             }
             return map;
         }
 
         @Override
         public void set(String key, Object value, int expires) {
-            cache.put(key, value);
+            memcached.put(key, value);
         }
 
         @Override
         public void delete(String key) {
-            cache.remove(key);
+            memcached.remove(key);
         }
 
     }
+
+Memcached客户端一般会自动进行序列化和反序列化，所以上面的代码中没有手动进行序列化和反序列化。
+
 
 初始化mango对象
 _______________
@@ -78,10 +136,10 @@ _______________
 .. code-block:: java
 
     DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
-    Mango mango = Mango.newInstance(ds); 
-    mango.setDefaultCacheHandler(new CacheHandlerImpl());
+    Mango mango = Mango.newInstance(ds);
+    mango.setDefaultCacheHandler(new MockRedisHandler());
 
-正常初始化mango对象后，只需要通过setDefaultCacheHandler方法传入一个实现了CacheHandler接口的对象即可。
+正常初始化mango对象后，只需要通过setDefaultCacheHandler方法传入一个实现了CacheHandler接口的对象即可，这里我们使用的是模拟Redis实现的MockRedisHandler。
 
 .. _单key取单值:
 
@@ -194,7 +252,7 @@ ___________
 
     import javax.sql.DataSource;
 
-    public class SingleKeySingeValue {
+    public class SingleKeySingeValueMain {
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
@@ -203,7 +261,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new CacheHandlerImpl());
+            mango.setDefaultCacheHandler(new MockRedisHandler());
 
             SingleKeySingeValueDao dao = mango.create(SingleKeySingeValueDao.class);
             dao.insert(1, "ash");
@@ -342,7 +400,7 @@ ___________
 
     import javax.sql.DataSource;
 
-    public class SingleKeyMultiValues {
+    public class SingleKeyMultiValuesMain {
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
@@ -351,7 +409,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new CacheHandlerImpl());
+            mango.setDefaultCacheHandler(new MockRedisHandler());
 
             SingleKeyMultiValuesDao dao = mango.create(SingleKeyMultiValuesDao.class);
             int uid = 1;
@@ -443,7 +501,7 @@ ___________
     import javax.sql.DataSource;
     import java.util.Arrays;
 
-    public class MultiKeysMultiValues {
+    public class MultiKeysMultiValuesMain {
 
         public static void main(String[] args) {
             String driverClassName = "com.mysql.jdbc.Driver";
@@ -452,7 +510,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new CacheHandlerImpl());
+            mango.setDefaultCacheHandler(new MockRedisHandler());
 
             MultiKeysMultiValuesDao dao = mango.create(MultiKeysMultiValuesDao.class);
             dao.insert(100, "ash");

@@ -8,7 +8,11 @@
 ______________
 
 纯配置文件集成是最简单的集成方式，所有的集成操作均在spring配置文件中，由spring容器创建数据库源工厂，mango对象和扫描使用@DB注解修饰的DAO类。
-下面是一个简单的纯配置文件集成实例:
+
+Mango框架使用SimpleDataSourceFactory连接单一数据库，使用MasterSlaveDataSourceFactory连接主从数据库，使用MultipleDatabaseDataSourceFactory连接混合数据库集群，详细内容请查看数据源工厂。下面将分别给出这3种方式连数据库的配置实例。
+
+连单一数据库配置实例
+^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: xml
 
@@ -51,6 +55,134 @@ ______________
 2. **配置mango对象**。创建mango对象的最佳途径是通过Mango类的静态方法newInstance，所以使用了factory-method指定静态方法。
 3. **配置扫描使用@DB注解修饰的DAO类**。MangoDaoScanner类是一个扫描DAO的扫描器，它能自动扫描packages属性中指定包下的所有类，识别出@DB注解修饰的DAO类，并将他自动加载到spring大工厂中，这样我们既能从ApplicationContext中直接getBean获得dao实例，也能将dao实例直接Autowired到所有由spring管理的类上。需要注意的是所有DAO类必须以DAO或Dao结尾，才能被扫描器识别。
    
+连主从数据库配置实例
+^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: xml
+
+	<beans>
+
+	    <!-- 配置主从数据源工厂 -->
+	    <bean id="dsf" class="org.jfaster.mango.datasource.MasterSlaveDataSourceFactory">
+	        <property name="master">
+	            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                <property name="url" value="jdbc:mysql://localhost:3306/mango_example_master" />
+	                <property name="username" value="root" />
+	                <property name="password" value="root" />
+	            </bean>
+	        </property>
+	        <property name="slaves">
+	            <list>
+	                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave1" />
+	                    <property name="username" value="root" />
+	                    <property name="password" value="root" />
+	                </bean>
+	                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave2" />
+	                    <property name="username" value="root" />
+	                    <property name="password" value="root" />
+	                </bean>
+	            </list>
+	        </property>
+	    </bean>
+
+	    <!-- 配置mango对象 -->
+	    <bean id="mango" class="org.jfaster.mango.operator.Mango" factory-method="newInstance">
+	        <property name="dataSourceFactory" ref="dsf" />
+	    </bean>
+
+	    <!-- 配置扫描使用@DB注解修饰的DAO类 -->
+	    <bean class="org.jfaster.mango.plugin.spring.MangoDaoScanner">
+	        <property name="packages">
+	            <list>
+	                <!-- 扫描包名 -->
+	                <value>org.jfaster.mango.example.spring</value>
+
+	                <!-- <value>其他需要扫描的包</value> -->
+	            </list>
+	        </property>
+	    </bean>
+
+	</beans>
+
+连多个数据库集群配置实例
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: xml
+
+	<beans>
+
+	    <!-- 配置多数据库数据源工厂 -->
+	    <bean id="dsf" class="org.jfaster.mango.datasource.MultipleDatabaseDataSourceFactory">
+	        <property name="factories">
+	            <map>
+	                <entry key="db1">
+	                    <bean class="org.jfaster.mango.datasource.SimpleDataSourceFactory">
+	                        <property name="dataSource">
+	                            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                                <property name="url" value="jdbc:mysql://localhost:3306/mango_example" />
+	                                <property name="username" value="root" />
+	                                <property name="password" value="root" />
+	                            </bean>
+	                        </property>
+	                    </bean>
+	                </entry>
+	                <entry key="db2">
+	                    <bean class="org.jfaster.mango.datasource.MasterSlaveDataSourceFactory">
+	                        <property name="master">
+	                            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                                <property name="url" value="jdbc:mysql://localhost:3306/mango_example_master" />
+	                                <property name="username" value="root" />
+	                                <property name="password" value="root" />
+	                            </bean>
+	                        </property>
+	                        <property name="slaves">
+	                            <list>
+	                                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave1" />
+	                                    <property name="username" value="root" />
+	                                    <property name="password" value="root" />
+	                                </bean>
+	                                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave2" />
+	                                    <property name="username" value="root" />
+	                                    <property name="password" value="root" />
+	                                </bean>
+	                            </list>
+	                        </property>
+	                    </bean>
+	                </entry>
+	            </map>
+	        </property>
+	    </bean>
+
+	    <!-- 配置mango对象 -->
+	    <bean id="mango" class="org.jfaster.mango.operator.Mango" factory-method="newInstance">
+	        <property name="dataSourceFactory" ref="dsf" />
+	    </bean>
+
+	    <!-- 配置扫描使用@DB注解修饰的DAO类 -->
+	    <bean class="org.jfaster.mango.plugin.spring.MangoDaoScanner">
+	        <property name="packages">
+	            <list>
+	                <!-- 扫描包名 -->
+	                <value>org.jfaster.mango.example.spring</value>
+
+	                <!-- <value>其他需要扫描的包</value> -->
+	            </list>
+	        </property>
+	    </bean>
+
+	</beans>
+
 
 配置文件加代码集成
 __________________

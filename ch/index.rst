@@ -29,7 +29,7 @@ ________
 获得mango
 _________
 
-由于mango不依赖其它jar包，所以可以直接 `下载mango-1.4.0.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.0/mango-1.4.0.jar>`_ ，并将它放在工程的classpath下。
+由于mango不依赖其它jar包，所以可以直接 `下载mango-1.4.1.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.1/mango-1.4.1.jar>`_ ，并将它放在工程的classpath下。
 
 当然mango也已经上传到 `maven中心库 <http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jfaster%22%20AND%20a%3A%22mango%22>`_ 中，如果您的工程在使用maven，那么只需要在pom.xml文件中添加下面的依赖就能使用mango的功能。
 
@@ -38,7 +38,7 @@ _________
     <dependency>
         <groupId>org.jfaster</groupId>
         <artifactId>mango</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </dependency>
 
 
