@@ -10,7 +10,6 @@
     basic   
     binding
     mapping
-    globaltable
     datasource
     sharding
     functional

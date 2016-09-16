@@ -205,6 +205,31 @@ ________
 
 需要注意的是，mango内部有两种批量更新的实现，如果批量更新在同一个数据源的同一张表上完成，mango会使用jdbc原生的批量更新方法，否则mango会在内部进行循环更新。
 
+.. _全局表名:
+
+全局表名
+________
+
+我们可以把表名定义在@DB注解的table参数中作为全局表名，这样我们就可以通过#table来使用全局表名了，请看下面的示例代码:
+
+.. code-block:: java
+
+    package org.jfaster.mango.example;
+
+    import org.jfaster.mango.annotation.DB;
+    import org.jfaster.mango.annotation.SQL;
+
+    @DB(table = "card")
+    public interface CardDao {
+
+        @SQL("select content from #table where id=:1")
+        public String getContentById(int id);
+
+        @SQL("insert into #table values(:1, :2)")
+        public int insert(int id, String content);
+
+    }
+
 查看完整示例代码和表结构
 ________________________
 
