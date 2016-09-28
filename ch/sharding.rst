@@ -204,7 +204,7 @@ ____________
 
     }
 
-上面的代码中，引入了@ShardingBy注解，@ShardBy=@DataSourceShardBy+@TableShardBy。
+上面的代码中，引入了@ShardingBy注解，@ShardingBy=@DatabaseShardingBy+@TableShardingBy。
 
 多维度分片策略
 ______________
