@@ -16,4 +16,5 @@
     dynamic
     cache
     transaction
+    logging
     spring
