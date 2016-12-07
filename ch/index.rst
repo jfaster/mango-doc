@@ -11,7 +11,7 @@
 * 支持动态sql，可以构造任意复杂的sql语句
 * 支持多数据源，分表，分库，事务
 * 内嵌“函数式调用”功能，能将任意复杂的对象，映射到数据库的表中
-* 高效详细的log统计，方便开发者随时了解自己的系统
+* 高效详细的实时统计系统，方便开发者随时了解自己的系统
 * 独立jar包，不依赖其它jar包
 * 提供便捷的spring插件，与spring无缝集成
 
@@ -29,22 +29,22 @@ ________
 获得mango
 _________
 
-由于mango不依赖其它jar包，所以可以直接 `下载mango-1.4.2.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.2/mango-1.4.2.jar>`_ ，并将它放在工程的classpath下。
+由于mango不依赖其它jar包，所以可以直接 `下载mango-1.4.3.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.3/mango-1.4.3.jar>`_ ，并将它放在工程的classpath下。
 
 当然mango也已经上传到 `maven中心库 <http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jfaster%22%20AND%20a%3A%22mango%22>`_ 中，如果您的工程在使用maven，那么只需要在pom.xml文件中添加下面的依赖就能使用mango的功能。
 
-.. code-block:: none
+.. code-block:: xml
 
     <dependency>
         <groupId>org.jfaster</groupId>
         <artifactId>mango</artifactId>
-        <version>1.4.2</version>
+        <version>1.4.3</version>
     </dependency>
 
 
 需要注意的是，只使用mango是无法连接数据库成功的，对于连接不同的数据库，您还需要添加相应的JDBC驱动，以连接MySQL数据库为例，您还需要用到 `mysql-connector-java <http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22mysql%22%20AND%20a%3A%22mysql-connector-java%22>`_ 。
 
-.. code-block:: none
+.. code-block:: xml
 
     <dependency>
         <groupId>mysql</groupId>

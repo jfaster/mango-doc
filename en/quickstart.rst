@@ -14,7 +14,7 @@ __________
 
 如果您使用maven，请将mango和mysql-connector-java的依赖添加进pom.xml文件即可
 
-.. code-block:: none
+.. code-block:: xml
 
     <dependency>
         <groupId>org.jfaster</groupId>

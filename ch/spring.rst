@@ -51,7 +51,7 @@ Mango框架使用SimpleDataSourceFactory连接单一数据库，使用MasterSlav
 
 上面的配置主要包含3部分。
 
-1. **配置数据源工厂**。DriverManagerDataSource数据源是mango框架对DataSource的简单实现，仅供测试使用，如果是生产环境，请使用c3p0，dbcp等高性能数据源。
+1. **配置数据源工厂**。DriverManagerDataSource数据源是mango框架对DataSource的简单实现，仅供测试使用，如果是生产环境，请使用HikariCP，c3p0，dbcp等高性能数据源。
 2. **配置mango对象**。创建mango对象的最佳途径是通过Mango类的静态方法newInstance，所以使用了factory-method指定静态方法。
 3. **配置扫描使用@DB注解修饰的DAO类**。MangoDaoScanner类是一个扫描DAO的扫描器，它能自动扫描packages属性中指定包下的所有类，识别出@DB注解修饰的DAO类，并将他自动加载到spring大工厂中，这样我们既能从ApplicationContext中直接getBean获得dao实例，也能将dao实例直接Autowired到所有由spring管理的类上。需要注意的是所有DAO类必须以DAO或Dao结尾，才能被扫描器识别。
    

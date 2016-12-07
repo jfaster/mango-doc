@@ -14,12 +14,12 @@ __________
 
 如果您使用maven，请将mango和mysql-connector-java的依赖添加进pom.xml文件即可
 
-.. code-block:: none
+.. code-block:: xml
 
     <dependency>
         <groupId>org.jfaster</groupId>
         <artifactId>mango</artifactId>
-        <version>1.4.2</version>
+        <version>1.4.3</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -27,7 +27,7 @@ __________
         <version>5.1.29</version>
     </dependency>
 
-如果您不使用maven，请手动下载 `mango-1.4.2.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.2/mango-1.4.2.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
+如果您不使用maven，请手动下载 `mango-1.4.3.jar <http://search.maven.org/remotecontent?filepath=org/jfaster/mango/1.4.3/mango-1.4.3.jar>`_ 和 `mysql-connector-java-5.1.29 <http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar>`_ ，并将他们放入工程的classpath下。
 
 
 数据库准备

@@ -14,7 +14,7 @@ The most recent release is Mango 1.3.5, released April 12, 2016.
 
 To add a dependency on Mango using Maven, use the following:
 
-.. code-block:: none
+.. code-block:: xml
 
 	<dependency>
 	    <groupId>org.jfaster</groupId>
@@ -24,7 +24,7 @@ To add a dependency on Mango using Maven, use the following:
 
 To add a dependency using Gradle:
 
-.. code-block:: none
+.. code-block:: xml
 
 	dependencies {
 	    compile 'org.jfaster:mango:1.3.5'
