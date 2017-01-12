@@ -137,9 +137,9 @@ _______________
 
     DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
     Mango mango = Mango.newInstance(ds);
-    mango.setDefaultCacheHandler(new MockRedisHandler());
+    mango.setCacheHandler(new MockRedisHandler());
 
-正常初始化mango对象后，只需要通过setDefaultCacheHandler方法传入一个实现了CacheHandler接口的对象即可，这里我们使用的是模拟Redis实现的MockRedisHandler。
+正常初始化mango对象后，只需要通过setCacheHandler方法传入一个实现了CacheHandler接口的对象即可，这里我们使用的是模拟Redis实现的MockRedisHandler。
 
 .. _单key取单值:
 
@@ -261,7 +261,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new MockRedisHandler());
+            mango.setCacheHandler(new MockRedisHandler());
 
             SingleKeySingeValueDao dao = mango.create(SingleKeySingeValueDao.class);
             dao.insert(1, "ash");
@@ -409,7 +409,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new MockRedisHandler());
+            mango.setCacheHandler(new MockRedisHandler());
 
             SingleKeyMultiValuesDao dao = mango.create(SingleKeyMultiValuesDao.class);
             int uid = 1;
@@ -510,7 +510,7 @@ ___________
             String password = "root"; // 这里请使用您自己的密码
             DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
             Mango mango = Mango.newInstance(ds);
-            mango.setDefaultCacheHandler(new MockRedisHandler());
+            mango.setCacheHandler(new MockRedisHandler());
 
             MultiKeysMultiValuesDao dao = mango.create(MultiKeysMultiValuesDao.class);
             dao.insert(100, "ash");

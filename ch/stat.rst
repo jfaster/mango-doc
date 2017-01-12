@@ -79,7 +79,7 @@ StatMonitor接口一共有两个需要实现的方法：
         @Override
         public void handleStat(long statBeginTime, long statEndTime, List<OperatorStat> stats) throws Exception {
             for (OperatorStat stat : stats) {
-                if (stat.getAverageDatabaseExecutePenalty() > TimeUnit.MILLISECONDS.toNanos(10)) {
+                if (stat.getDatabaseAverageExecutePenalty() > TimeUnit.MILLISECONDS.toNanos(10)) {
                     // 有dao方法在10秒内平均响应时间大于10毫秒，促发短信或邮件报警
                     break;
                 }
@@ -121,7 +121,7 @@ StatMonitor接口一共有两个需要实现的方法：
                     String dao = stat.getMethod().getDeclaringClass().getSimpleName() + "." + stat.getMethod().getName();
                     data.append(String.format("%-36s%-12.1f%-12s%-12s%n",
                             dao,
-                            (double) stat.getAverageDatabaseExecutePenalty() / (1000*1000), // 平均响应时间
+                            (double) stat.getDatabaseAverageExecutePenalty() / (1000*1000), // 平均响应时间
                             stat.getDatabaseExecuteCount(), // 执行总数
                             stat.getDatabaseExecuteExceptionCount())); // 执行异常总数
                 }
@@ -161,7 +161,7 @@ databaseExecuteExceptionCount      long                        数据库执行�
 databaseExecuteCount               long                        数据库执行总数（成功数＋异常数）
 databaseExecuteSuccessRate         double                      数据库执行成功率
 databaseExecuteExceptionRate       double                      数据库执行异常率
-averageDatabaseExecutePenalty      long                        数据库执行平均响应时间（单位为纳秒）
+databaseAverageExecutePenalty      long                        数据库执行平均响应时间（单位为纳秒）
 hitCount                           long                        缓存命中数
 missCount                          long                        缓存丢失数
 hitRate                            double                      缓存命中率
@@ -170,37 +170,37 @@ cacheGetExceptionCount             long                        缓存get操作�
 cacheGetCount                      long                        缓存get操作总数（成功数＋异常数）
 cacheGetSuccessRate                double                      缓存get操作成功率
 cacheGetExceptionRate              double                      缓存get操作异常率
-averageCacheGetPenalty             long                        缓存get操作平均响应时间（单位为纳秒）
+cacheAverageGetPenalty             long                        缓存get操作平均响应时间（单位为纳秒）
 cacheGetBulkSuccessCount           long                        缓存批量get操作成功数
 cacheGetBulkExceptionCount         long                        缓存批量get操作异常数
 cacheGetBulkCount                  long                        缓存批量get操作总数（成功数＋异常数）
 cacheGetBulkSuccessRate            double                      缓存批量get操作成功率
 cacheGetBulkExceptionRate          double                      缓存批量get操作异常率
-averageCacheGetBulkPenalty         long                        缓存批量get操作平均响应时间（单位为纳秒）
+cacheAverageGetBulkPenalty         long                        缓存批量get操作平均响应时间（单位为纳秒）
 cacheSetSuccessCount               long                        缓存set操作成功数
 cacheSetExceptionCount             long                        缓存set操作异常数
 cacheSetCount                      long                        缓存set操作总数（成功数＋异常数）
 cacheSetSuccessRate                double                      缓存set操作成功率
 cacheSetExceptionRate              double                      缓存set操作异常率
-averageCacheSetPenalty             long                        缓存set操作平均响应时间（单位为纳秒）
+cacheAverageSetPenalty             long                        缓存set操作平均响应时间（单位为纳秒）
 cacheAddSuccessCount               long                        缓存add操作成功数
 cacheAddExceptionCount             long                        缓存add操作异常数
 cacheAddCount                      long                        缓存add操作总数（成功数＋异常数）
 cacheAddSuccessRate                double                      缓存add操作成功率
 cacheAddExceptionRate              double                      缓存add操作异常率
-averageCacheAddPenalty             long                        缓存add操作平均响应时间（单位为纳秒）
+cacheAverageAddPenalty             long                        缓存add操作平均响应时间（单位为纳秒）
 cacheDeleteSuccessCount            long                        缓存delete操作成功数
 cacheDeleteExceptionCount          long                        缓存delete操作异常数
 cacheDeleteCount                   long                        缓存delete操作总数（成功数＋异常数）
 cacheDeleteSuccessRate             double                      缓存delete操作成功率
 cacheDeleteExceptionRate           double                      缓存delete操作异常率
-averageCacheDeletePenalty          long                        缓存delete操作平均响应时间（单位为纳秒）
+cacheAverageDeletePenalty          long                        缓存delete操作平均响应时间（单位为纳秒）
 cacheBatchDeleteSuccessCount       long                        缓存批量delete操作成功数
 cacheBatchDeleteExceptionCount     long                        缓存批量delete操作异常数
 cacheBatchDeleteCount              long                        缓存批量delete操作总数（成功数＋异常数）
 cacheBatchDeleteSuccessRate        double                      缓存批量delete操作成功率
 cacheBatchDeleteExceptionRate      double                      缓存批量delete操作异常率
-averageCacheBatchDeletePenalty     long                        缓存批量delete操作平均响应时间（单位为纳秒）
+cacheAverageBatchDeletePenalty     long                        缓存批量delete操作平均响应时间（单位为纳秒）
 ===============================    ========================    ============================================
 
 
