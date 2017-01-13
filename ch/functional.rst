@@ -110,10 +110,6 @@ ________________
 	    private String name;
 
 	    private Gender gender;
-
-	    public int getId() {
-	        return id;
-	    }
 	    
 	    // id与name属性对应的get与set方法必须加上，这里省略掉了
 
