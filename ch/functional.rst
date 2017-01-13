@@ -117,12 +117,12 @@ ________________
 	    
 	    // id与name属性对应的get与set方法必须加上，这里省略掉了
 
-	    @Getter(EnumToStringFunction.class)
+	    @Getter(EnumToIntegerFunction.class)
 	    public Gender getGender() {
 	        return gender;
 	    }
 
-	    @Setter(StringToEnumFunction.class)
+	    @Setter(IntegerToEnumFunction.class)
 	    public void setGender(Gender gender) {
 	        this.gender = gender;
 	    }
