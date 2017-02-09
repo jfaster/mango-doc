@@ -70,12 +70,10 @@ TeacherDao类:
 执行 **addTeacher** 方法的流程图如下图所示：
 
 .. image:: _static/functional-list2string.png
-    :width: 800px
 
 执行 **getTeacherById** 方法的流程图如下图所示：
 
 .. image:: _static/functional-string2list.png
-    :width: 800px
 
 
 枚举与数字互转
@@ -149,12 +147,10 @@ PersonDao类:
 执行 **addPerson** 方法的流程图如下图所示：
 
 .. image:: _static/functional-enum2int.png
-    :width: 800px
 
 执行 **getPersonById** 方法的流程图如下图所示：
 
 .. image:: _static/functional-int2enum.png
-    :width: 800px
 
 复杂类与字符串互转
 __________________
@@ -231,12 +227,10 @@ CardDao类:
 执行 **addCard** 方法的流程图如下图所示：
 
 .. image:: _static/functional-object2gson.png
-    :width: 800px
 
 执行 **getCardById** 方法的流程图如下图所示：
 
 .. image:: _static/functional-gson2object.png
-    :width: 800px
 
 查看完整示例代码和表结构
 ________________________

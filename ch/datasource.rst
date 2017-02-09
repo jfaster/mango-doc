@@ -18,7 +18,7 @@ SimpleDataSourceFactory即简单数据源工厂。应用服务所有的数据库
 
 下面是使用SimpleDataSourceFactory连单一数据库的结构图：
 
-.. image:: _static/SimpleDataSourceFactory.png
+.. image:: _static/datasource-simple.png
 
 使用简单数据源工厂初始化mango对象的代码如下：
 
@@ -74,7 +74,7 @@ MasterSlaveDataSourceFactory即主从数据源工厂。应用服务的数据库�
 
 下面是使用MasterSlaveDataSourceFactory连主从数据库的结构图：
 
-.. image:: _static/MasterSlaveDataSourceFactory.png
+.. image:: _static/datasource-masterslave.png
 
 使用主从数据源工厂初始化mango对象的代码如下：
 
@@ -122,7 +122,7 @@ MultipleDatabaseDataSourceFactory即多数据库数据源工厂。应用服务�
 
 下面是使用MultipleDatabaseDataSourceFactory连混合数据库集群的结构图：
 
-.. image:: _static/MultipleDatabaseDataSourceFactory.png
+.. image:: _static/datasource-multiple.png
 
 上图中，应用服务器既连接了单一数据库也连接了主从数据库，我们可以把MultipleDatabaseDataSourceFactory看成是一个大的容器，里面包含了一个或多个DataSourceFactory。以上图为例，MultipleDatabaseDataSourceFactory包含了1个SimpleDataSourceFactory用以连接单一数据库与1个MasterSlaveDataSourceFactory用以连接主从数据库。
 

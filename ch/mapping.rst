@@ -37,12 +37,20 @@ ________________________
 2. 将P由驼峰式规则变为下划线规则，得到新的名称Q（如：P="userId"则Q="user_id"）
 3. 如果某个列字段名称与名称P或Q相等（忽略大小写），则匹配满足，能完成映射
    
-下图是默认映射规则匹配实例：
+下面是匹配规则实例表格：
 
-.. image:: _static/mapping-multi-table.png
-    :width: 350px
+============    ================    ========
+对象属性名称    数据库列字段名称    是否匹配
+============    ================    ========
+userAge         user_age            匹配
+userAge         userAge             匹配
+userAge         USERAGE             匹配
+userage         userAge             匹配
+user_age        userage             不匹配
+user_age        userAge             不匹配
+============    ================    ========
 
-下面是默认映射规则的实例：
+下面是默认映射规则的实例代码：
 
 .. code-block:: java
 
