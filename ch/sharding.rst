@@ -8,60 +8,171 @@ ______
 当某张表的数据量很大时，sql执行效率都会变低，这时通常会把大表拆分成多个小表，以提高sql执行效率。
 我们将这种大表拆分成多个小表的策略称之为表分片。
 
-先来看一段mango框架中表分片的代码:
+下面我们通过一实际例子，展示如何使用mango框架完成表分片（分表）。
+
+需求描述
+^^^^^^^^
+
+数据库中有t_order_0与t_order_1共2张表，我们按照用户ID（后续简称uid）纬度进行表分片：
+
+* uid小于等于1000时，使用t_order_0表
+* uid大于1000时，时使用t_order_1表
+
+书写DAO接口
+^^^^^^^^^^^
 
 .. code-block:: java
 
-    @DB(table = "t_order")
-    @Sharding(tableShardingStrategy = TableShardingOrderDao.OrderTableShardingStrategy.class)
-    public interface TableShardingOrderDao {
+    public class TableShardingOrderDaoMain {
 
-        @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-        public void addOrder(@TableShardingBy("uid") Order order);
+        public static void main(String[] args) {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String url = "jdbc:mysql://localhost:3306/mango_example";
+            String username = "root"; // 这里请使用您自己的用户名
+            String password = "root"; // 这里请使用您自己的密码
+            DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
+            Mango mango = Mango.newInstance(ds);
+        }
 
-        @SQL("select id, uid, price, status from #table where uid = :1")
-        public List<Order> getOrdersByUid(@TableShardingBy int uid);
+        @DB(table = "t_order")
+        public interface TableShardingOrderDao {
 
-        class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+    }
+
+上面的代码中，我们新添加了TableShardingOrderDao接口，其中addOrder方法用于向t_order表插入订单，getOrdersByUid方法用于根据uid从t_order表读取订单列表。
+为了后续实现表分片，这里我们使用了 :ref:`全局表名`。
+
+定义表分片策略
+^^^^^^^^^^^^^^
+
+.. code-block:: java
+    :emphasize-lines: 23,24
+
+    public class TableShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // DataSource ds = ...
+            Mango mango = Mango.newInstance(ds);
+        }
+
+        @DB(table = "t_order")
+        public interface TableShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+        static class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
 
             @Override
-            public String getTargetTable(String table, Integer shardingParameter) {
-                return table + "_" + (shardingParameter % 2);
+            public String getTargetTable(String table, Integer uid) {
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
             }
 
         }
 
     }
 
-上面的代码实现了所有的表分片逻辑，以上面的代码为例，总结一下mango框架实现表分片的3个步骤：
+上面的代码中，我们新添加了OrderTableShardingStrategy类，OrderTableShardingStrategy类实现了 `TableShardingStrategy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/sharding/TableShardingStrategy.java>`_ 接口中的 ``getTargetTable`` 方法。
 
-1. 填写@DB注解中的table参数，这个参数将启用 :ref:`全局表名`，上面代码的全局表名是t_order
-2. 引入 `@Sharding <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/Sharding.java>`_ 注解，并填写@Sharding注解中的tableShardingStrategy参数，这个参数的作用是定义表分片策略，上面代码使用了自定义的表分片策略OrderTableShardingStrategy
-3. 使用 `@TableShardingBy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/TableShardingBy.java>`_ 注解指定对表分片策略传入的参数。上面的代码中，调用 ``addOrder(@TableShardingBy("uid") Order order)`` 方法时，会使用order对象中的uid属性作为参数传递给第2步中的表分片策略，而调用 ``getOrdersByUid(@TableShardingBy int uid)`` 方法时，会使用uid作为参数传递给第2步中的表分片策略
+getTargetTable方法是表分片策略的核心，共两个输入参数，输出则为最终需要访问的表名字，所以我们通过实现getTargetTable方法计算最终需要访问的表名字。
 
-上面的3个步骤步中，最核心的是第2步中的表分片策略。mango框架使用@Sharding注解中的tableShardingStrategy参数来指定表分片策略，tableShardingStrategy参数接受任何实现了 `TableShardingStrategy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/sharding/TableShardingStrategy.java>`_ 接口的类。
+第1个参数table为@DB注解中table参数所定义的全局表名，这里是t_order。
 
-我们来看一下TableShardingStrategy接口的定义:
+第2个参数是自定义传入的参数，这里由于我们要使用uid计算如何分表，所以第2个参数是uid，有关uid如何传入会在下文中进行讲解。需要注意的是，第2个参数是一个泛型参数，这里由于uid是整形数字，所以类型定义为Integer。
+
+表分片策略与DAO接口绑定
+^^^^^^^^^^^^^^^^^^^^^^^
+
+有了DAO接口与表分片策略，下面我们使用 `@Sharding <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/Sharding.java>`_ 注解中的tableShardingStrategy参数，将表分片策略与DAO接口进行绑定，具体代码如下：
 
 .. code-block:: java
+    :emphasize-lines: 9
 
-    public interface TableShardingStrategy<T> {
-    
-        public String getTargetTable(String table, T shardingParameter);
+    public class TableShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // DataSource ds = ...
+            Mango mango = Mango.newInstance(ds);
+        }
+
+        @DB(table = "t_order")
+        @Sharding(tableShardingStrategy = OrderTableShardingStrategy.class)
+        public interface TableShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+        static class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
+
+            @Override
+            public String getTargetTable(String table, Integer uid) {
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
+            }
+
+        }
 
     }
 
-TableShardingStrategy接口非常简单，只有一个getTargetTable方法，其中:
+表分片策略参数传入
+^^^^^^^^^^^^^^^^^^
 
-* 输入参数table，对应的是全局表名
-* 输入参数shardingParameter，接收被@TableShardingBy注解修饰的参数，shardingParameter的类型是泛型，将由实现类根据@TableShardingBy修饰的参数确定具体类型
-* 输出则为真正的表名
- 
-以上面的OrderTableShardingStrategy表分片策略为例：
+最后我们还需将参数uid传入到表分片策略中，所以mango框架引入了 `@TableShardingBy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/TableShardingBy.java>`_ 注解用于指定给表分片策略传入的参数，具体代码如下：
 
-* 输入参数table将被传入字符串"t_order"
-* 输入参数shardingParameter则会分两种情况，在调用 ``addOrder(@TableShardingBy("uid") Order order)`` 方法时，shardingParameter会被传入order对象中的uid属性，而在调用 ``getOrdersByUid(@TableShardingBy int uid)`` 方法时，shardingParameter会被传入参数uid
-* 当uid为偶数时，使用t_order_0表，当uid为奇数时，使用t_order_1表
+.. code-block:: java
+    :emphasize-lines: 13,16
+
+    public class TableShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // DataSource ds = ...
+            Mango mango = Mango.newInstance(ds);
+        }
+
+        @DB(table = "t_order")
+        @Sharding(tableShardingStrategy = OrderTableShardingStrategy.class)
+        public interface TableShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(@TableShardingBy("uid") Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(@TableShardingBy int uid);
+
+        }
+
+        static class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
+
+            @Override
+            public String getTargetTable(String table, Integer uid) {
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
+            }
+
+        }
+
+    }
+
+上面的代码中，调用 ``addOrder(@TableShardingBy("uid") Order order)`` 方法时，会使用order对象中的uid属性作为参数传递给表分片策略，而调用 ``getOrdersByUid(@TableShardingBy int uid)`` 方法时，会使用uid作为参数传递给表分片策略。
 
 数据库分片
 __________
@@ -69,57 +180,199 @@ __________
 数据库分片通常也被称为分库，散库等。
 当我们在某个库中，把某张大表拆分成多个小表后还不能满足性能要求，这时我们需要把一部分拆分的表挪到另外一个库中，以提高sql执行效率。
 
-先来看一段mango框架中数据库分片的代码:
+下面我们通过一实际例子，展示如何使用mango框架完成数据库分片（分库）。
+
+需求描述
+^^^^^^^^
+
+3个独立数据库db0，db1，db2中，各有1张t_order表，在读写t_order表时，我们按照用户ID（后续简称uid）纬度进行数据库分片：
+
+* uid模3为0的请求落在数据库db0
+* uid模3为1的请求落在数据库db1
+* uid模3为2的请求落在数据库db2
+
+.. _初始化数据库源工厂:
+
+初始化数据库源工厂
+^^^^^^^^^^^^^^^^^^
 
 .. code-block:: java
 
-    @DB()
-    @Sharding(databaseShardingStrategy = DatabaseShardingOrderDao.OrderDatabaseShardingStrategy.class)
-    public interface DatabaseShardingOrderDao {
+    public class DatabaseShardingOrderDaoMain {
 
-        @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
-        public void addOrder(@DatabaseShardingBy("uid") Order order);
+        public static void main(String[] args) {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String username = "root"; // 这里请使用您自己的用户名
+            String password = "root"; // 这里请使用您自己的密码
 
-        @SQL("select id, uid, price, status from t_order where uid = :1")
-        public List<Order> getOrdersByUid(@DatabaseShardingBy int uid);
+            int dbNum = 3;
+            List<DataSourceFactory> dsfs = new ArrayList<DataSourceFactory>();
+            for (int i = 0; i < dbNum; i++) {
+                String name = "dsf" + i;
+                String url = "jdbc:mysql://localhost:3306/db" + i;
+                DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
+                DataSourceFactory dsf = new SimpleDataSourceFactory(name, ds);
+                dsfs.add(dsf);
+            }
+            Mango mango = Mango.newInstance(dsfs);
+        }
+    }
 
-        class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
+上面的代码中，我们初始化了3个简单数据源工厂：
+
+* 名字为dsf0的数据源工厂连接数据库db0
+* 名字为dsf1的数据源工厂连接数据库db1
+* 名字为dsf2的数据源工厂连接数据库db2
+
+代码对应的结构图如下所示：
+
+.. image:: _static/sharding-init.jpg
+
+书写DAO接口
+^^^^^^^^^^^
+
+.. code-block:: java
+
+    public class DatabaseShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // List<DataSourceFactory> dsfs = ...
+            Mango mango = Mango.newInstance(dsfs);
+        }
+
+        @DB()
+        public interface DatabaseShardingOrderDao {
+
+            @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from t_order where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+    }
+
+上面的代码中，我们新添加了DatabaseShardingOrderDao接口，其中addOrder方法用于向t_order表插入订单，getOrdersByUid方法用于根据uid从t_order表读取订单列表。
+
+定义数据库分片策略
+^^^^^^^^^^^^^^^^^^
+
+.. code-block:: java
+    :emphasize-lines: 23
+
+    public class DatabaseShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // List<DataSourceFactory> dsfs = ...
+            Mango mango = Mango.newInstance(dsfs);
+        }
+
+        @DB()
+        public interface DatabaseShardingOrderDao {
+
+            @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from t_order where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+        static class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
 
             @Override
-            public String getDatabase(Integer shardingParameter) {
-                return shardingParameter < 1000 ? "db1" : "db2";
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
             }
 
         }
 
     }
 
-上面的代码实现了所有的数据库分片逻辑，以上面的代码为例，总结一下mango框架实现数据库分片的2个步骤：
+上面的代码中，我们新添加了OrderDatabaseShardingStrategy类，OrderDatabaseShardingStrategy类实现了 `DatabaseShardingStrategy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/sharding/DatabaseShardingStrategy.java>`_ 接口中的 ``getDataSourceFactoryName`` 方法。
 
-1. 引入 `@Sharding <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/Sharding.java>`_ 注解，并填写@Sharding注解中的databaseShardingStrategy参数，这个参数的作用是定义数据库分片策略，上面代码使用了自定义的数据库分片策略OrderDatabaseShardingStrategy
-2. 使用 `@DatabaseShardingBy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/DatabaseShardingBy.java>`_ 注解指定对数据库分片策略传入的参数。上面的代码中，调用 ``addOrder(@DatabaseShardingBy("uid") Order order)`` 方法时，会使用order对象中的uid属性作为参数传递给第1步中的数据库分片策略，而调用 ``getOrdersByUid(@DatabaseShardingBy int uid)`` 方法时，会使用uid作为参数传递给第1步中的数据库分片策略
+getDataSourceFactoryName方法是数据库分片策略的核心，返回最终请求的数据源工厂名称。而getDataSourceFactoryName方法的输入参数是一个自定义传入的参数，这里由于我们要使用uid计算如何分库，所以参数为uid，有关uid如何传入会在下文中进行讲解。需要注意的是，输入参数是一个泛型参数，这里由于uid是整形数字，所以类型定义为Integer。
 
-上面的2个步骤步中，最核心的是第1步中的数据库分片策略。mango框架使用@Sharding注解中的databaseShardingStrategy参数来指定数据库分片策略，databaseShardingStrategy参数接受任何实现了 `DatabaseShardingStrategy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/sharding/DatabaseShardingStrategy.java>`_ 接口的类。
+在 :ref:`初始化数据库源工厂` 中我们定义了dsf0，dsf1，dsf2共3个数据源工厂，分别对应db0，db1，db2这3个数据库。所以当我们想访问db0中的t_order表时，我们只需要让getDataSourceFactoryName方法返回dsf0；当我们想访问db1中的t_order表时，我们只需要让getDataSourceFactoryName方法返回dsf1，并以此类推。
 
-我们来看一下DatabaseShardingStrategy接口的定义:
+数据库分片策略与DAO接口绑定
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+有了DAO接口与数据库分片策略，下面我们使用 `@Sharding <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/Sharding.java>`_ 注解中的databaseShardingStrategy参数，将数据库分片策略与DAO接口进行绑定，具体代码如下：
 
 .. code-block:: java
+    :emphasize-lines: 9
 
-    public interface DatabaseShardingStrategy<T> {
-    
-        public String getDatabase(T shardingParameter);
-    
+    public class DatabaseShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // List<DataSourceFactory> dsfs = ...
+            Mango mango = Mango.newInstance(dsfs);
+        }
+
+        @DB()
+        @Sharding(databaseShardingStrategy = OrderDatabaseShardingStrategy.class)
+        public interface DatabaseShardingOrderDao {
+
+            @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(Order order);
+
+            @SQL("select id, uid, price, status from t_order where uid = :1")
+            List<Order> getOrdersByUid(int uid);
+
+        }
+
+        static class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
+
+            @Override
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
+            }
+
+        }
+
     }
 
-DatabaseShardingStrategy接口非常简单，只有一个getDatabase方法，其中:
+数据库分片策略参数传入
+^^^^^^^^^^^^^^^^^^^^^^
 
-* 输入参数shardingParameter，接收被@DatabaseShardingBy注解修饰的参数，shardingParameter的类型是泛型，将由实现类根据@DatabaseShardingBy修饰的参数确定具体类型
-* 输出则为database名称
- 
-以上面的OrderDatabaseShardingStrategy数据库分片策略为例：
+最后我们还需将参数uid传入到数据库分片策略中，所以mango框架引入了 `@DatabaseShardingBy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/DatabaseShardingBy.java>`_ 注解用于指定给数据库分片策略传入的参数，具体代码如下：
 
-* 输入参数shardingParameter则会分两种情况，在调用 ``addOrder(@DatabaseShardingBy("uid") Order order)`` 方法时，shardingParameter会被传入order对象中的uid属性，而在调用 ``getOrdersByUid(@DatabaseShardingBy int uid)`` 方法时，shardingParameter会被传入参数uid
-* 当uid小于1000时，使用的database为db1，当uid大于等于1000时，使用的database为db2
+.. code-block:: java
+    :emphasize-lines: 13,16
+
+    public class DatabaseShardingOrderDaoMain {
+
+        public static void main(String[] args) {
+            // List<DataSourceFactory> dsfs = ...
+            Mango mango = Mango.newInstance(dsfs);
+        }
+
+        @DB()
+        @Sharding(databaseShardingStrategy = OrderDatabaseShardingStrategy.class)
+        public interface DatabaseShardingOrderDao {
+
+            @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(@DatabaseShardingBy("uid") Order order);
+
+            @SQL("select id, uid, price, status from t_order where uid = :1")
+            List<Order> getOrdersByUid(@DatabaseShardingBy int uid);
+
+        }
+
+        static class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
+
+            @Override
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
+            }
+
+        }
+
+    }
+
+上面的代码中，调用 ``addOrder(@DatabaseShardingBy("uid") Order order)`` 方法时，会使用order对象中的uid属性作为参数传递给数据库分片策略，而调用 ``getOrdersByUid(@DatabaseShardingBy int uid)`` 方法时，会使用uid作为参数传递给数据库分片策略。
 
 同时使用数据库分片与表分片
 __________________________
@@ -128,48 +381,83 @@ __________________________
 
 .. code-block:: java
 
-    @DB(table = "t_order")
-    @Sharding(
-            databaseShardingStrategy = ShardingOrderDao.OrderDatabaseShardingStrategy.class,
-            tableShardingStrategy = ShardingOrderDao.OrderTableShardingStrategy.class
-    )
-    public interface ShardingOrderDao {
+    public class ShardingOrderDaoMain {
 
-        @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-        public void addOrder(@DatabaseShardingBy("uid") @TableShardingBy("uid") Order order);
+        public static void main(String[] args) {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String username = "root"; // 这里请使用您自己的用户名
+            String password = "root"; // 这里请使用您自己的密码
 
-        @SQL("select id, uid, price, status from #table where uid = :1")
-        public List<Order> getOrdersByUid(@DatabaseShardingBy @TableShardingBy int uid);
+            int dbNum = 3;
+            List<DataSourceFactory> dsfs = new ArrayList<DataSourceFactory>();
+            for (int i = 0; i < dbNum; i++) {
+                String name = "dsf" + i;
+                String url = "jdbc:mysql://localhost:3306/db" + i;
+                DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
+                DataSourceFactory dsf = new SimpleDataSourceFactory(name, ds);
+                dsfs.add(dsf);
+            }
+            Mango mango = Mango.newInstance(dsfs);
+            ShardingOrderDao orderDao = mango.create(ShardingOrderDao.class);
 
-        class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
+            // 后续DAO操作
+        }
+
+        @DB(table = "t_order")
+        @Sharding(
+                databaseShardingStrategy = OrderDatabaseShardingStrategy.class,
+                tableShardingStrategy = OrderTableShardingStrategy.class
+        )
+        public interface ShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(@DatabaseShardingBy("uid") @TableShardingBy("uid") Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(@DatabaseShardingBy @TableShardingBy int uid);
+
+        }
+
+        static class OrderDatabaseShardingStrategy implements DatabaseShardingStrategy<Integer> {
 
             @Override
-            public String getDatabase(Integer uid) {
-                return uid < 1000 ? "db1" : "db2";
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
             }
 
         }
 
-        class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
+        static class OrderTableShardingStrategy implements TableShardingStrategy<Integer> {
 
             @Override
             public String getTargetTable(String table, Integer uid) {
-                return table + "_" + (uid % 2);
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
             }
 
         }
 
     }
 
-上面的代码中，数据库分片策略使用了OrderDatabaseShardingStrategy，即uid小于1000时使用的database为db1，uid大于等于1000时使用的database为db2。
-表分片策略则使用了OrderTableShardingStrategy，即uid为偶数时使用t_order_0表，uid为奇数时使用t_order_1表。
+数据库分片策略使用了OrderDatabaseShardingStrategy类：
 
-组合数据库分片策略与表分片策略得到如下规则：
+* uid模3为0的请求落在数据库db0
+* uid模3为1的请求落在数据库db1
+* uid模3为2的请求落在数据库db2
 
-1. uid小于1000并且uid为偶数时，使用db1中的t_order_0表
-2. uid小于1000并且uid为奇数时，使用db1中的t_order_1表
-3. uid大于等于1000并且uid为偶数时，使用db2中的t_order_0表
-4. uid大于等于1000并且uid为奇数时，使用db2中的t_order_1表
+表分片策略则使用了OrderTableShardingStrategy类：
+
+* uid小于等于1000时，使用t_order_0表
+* uid大于1000时，时使用t_order_1表
+
+同时使用数据库分片策略与表分片策略得到如下规则：
+
+* uid模3为0且小于等于1000时，使用db0中的t_order_0表
+* uid模3为1且小于等于1000时，使用db1中的t_order_0表
+* uid模3为2且小于等于1000时，使用db2中的t_order_0表
+* uid模3为1且大于1000时，使用db0中的t_order_1表
+* uid模3为1且大于1000时，使用db1中的t_order_1表
+* uid模3为1且大于1000时，使用db2中的t_order_1表
 
 精简分片代码
 ____________
@@ -178,33 +466,62 @@ ____________
 
 .. code-block:: java
 
-    @DB(table = "t_order")
-    @Sharding(shardingStrategy = ShardingOrder2Dao.OrderShardingStrategy.class)
-    public interface ShardingOrder2Dao {
+    public class SmartShardingOrderDaoMain {
 
-        @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-        public void addOrder(@ShardingBy("uid") Order order);
+        public static void main(String[] args) {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String username = "root"; // 这里请使用您自己的用户名
+            String password = "root"; // 这里请使用您自己的密码
 
-        @SQL("select id, uid, price, status from #table where uid = :1")
-        public List<Order> getOrdersByUid(@ShardingBy int uid);
+            int dbNum = 3;
+            List<DataSourceFactory> dsfs = new ArrayList<DataSourceFactory>();
+            for (int i = 0; i < dbNum; i++) {
+                String name = "dsf" + i;
+                String url = "jdbc:mysql://localhost:3306/db" + i;
+                DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
+                DataSourceFactory dsf = new SimpleDataSourceFactory(name, ds);
+                dsfs.add(dsf);
+            }
+            Mango mango = Mango.newInstance(dsfs);
+            SmartShardingOrderDao orderDao = mango.create(SmartShardingOrderDao.class);
 
-        class OrderShardingStrategy implements ShardingStrategy<Integer, Integer> {
+            // 后续DAO操作
+        }
+
+        @DB(table = "t_order")
+        @Sharding(shardingStrategy = OrderShardingStrategy.class)
+        public interface SmartShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            void addOrder(@ShardingBy("uid") Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            List<Order> getOrdersByUid(@ShardingBy int uid);
+
+        }
+
+        static class OrderShardingStrategy implements ShardingStrategy<Integer, Integer> {
 
             @Override
-            public String getDatabase(Integer uid) {
-                return uid < 1000 ? "db1" : "db2";
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
             }
 
             @Override
             public String getTargetTable(String table, Integer uid) {
-                return table + "_" + (uid % 2);
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
             }
 
         }
 
     }
 
-上面的代码中，引入了@ShardingBy注解，@ShardingBy=@DatabaseShardingBy+@TableShardingBy。
+上面的代码中：
+
+- 引入了 `@ShardingBy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/ShardingBy.java>`_ 注解，使用@ShardingBy注解等于同时使用@DatabaseShardingBy注解与@TableShardingBy注解。
+
+- 引入了 `@ShardingStrategy <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/sharding/ShardingStrategy.java>`_ 接口，实现@ShardingStrategy接口等与同时实现@DatabaseShardingStrategy接口与@TableShardingStrategy接口。
 
 多维度分片策略
 ______________
@@ -217,45 +534,70 @@ ______________
 
 .. code-block:: java
 
-    @DB(table = "t_order")
-    public interface ShardingOrder3Dao {
+    public class MultiDimenShardingOrderDaoMain {
 
-        @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-        @Sharding(shardingStrategy = ShardingOrder3Dao.OrderUidShardingStrategy.class)
-        public void addOrder(@ShardingBy("uid") Order order);
+        public static void main(String[] args) {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String username = "root"; // 这里请使用您自己的用户名
+            String password = "root"; // 这里请使用您自己的密码
 
-        @SQL("select id, uid, price, status from #table where uid = :1")
-        @Sharding(shardingStrategy = ShardingOrder3Dao.OrderUidShardingStrategy.class)
-        public List<Order> getOrdersByUid(@ShardingBy int uid);
+            int dbNum = 3;
+            List<DataSourceFactory> dsfs = new ArrayList<DataSourceFactory>();
+            for (int i = 0; i < dbNum; i++) {
+                String name = "dsf" + i;
+                String url = "jdbc:mysql://localhost:3306/db" + i;
+                DataSource ds = new DriverManagerDataSource(driverClassName, url, username, password);
+                DataSourceFactory dsf = new SimpleDataSourceFactory(name, ds);
+                dsfs.add(dsf);
+            }
+            Mango mango = Mango.newInstance(dsfs);
+            MultiDimenShardingOrderDao orderDao = mango.create(MultiDimenShardingOrderDao.class);
 
-        @SQL("select id, uid, price, status from #table where id = :1")
-        @Sharding(shardingStrategy = OrderIdShardingStrategy.class)
-        public Order getOrderById(@ShardingBy String id);
+            // 后续DAO操作
+        }
 
-        class OrderUidShardingStrategy implements ShardingStrategy<Integer, Integer> {
+        @DB(table = "t_order")
+        public interface MultiDimenShardingOrderDao {
+
+            @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
+            @Sharding(shardingStrategy = OrderUidShardingStrategy.class)
+            void addOrder(@ShardingBy("uid") Order order);
+
+            @SQL("select id, uid, price, status from #table where uid = :1")
+            @Sharding(shardingStrategy = OrderUidShardingStrategy.class)
+            List<Order> getOrdersByUid(@ShardingBy int uid);
+
+            @SQL("select id, uid, price, status from #table where id = :1")
+            @Sharding(shardingStrategy = OrderIdShardingStrategy.class)
+            Order getOrderById(@ShardingBy String id);
+
+        }
+
+        static class OrderUidShardingStrategy implements ShardingStrategy<Integer, Integer> {
 
             @Override
-            public String getDatabase(Integer uid) {
-                return uid < 1000 ? "db1" : "db2";
+            public String getDataSourceFactoryName(Integer uid) {
+                return "dsf" + uid % 3;
             }
 
             @Override
             public String getTargetTable(String table, Integer uid) {
-                return table + "_" + (uid % 2);
+                int num = uid <= 1000 ? 0 : 1;
+                return table + "_" + num;
             }
 
         }
 
-        class OrderIdShardingStrategy implements ShardingStrategy<String, String> {
+        static class OrderIdShardingStrategy implements ShardingStrategy<String, String> {
 
             @Override
-            public String getDatabase(String orderId) {
-                return "db" + orderId.substring(0, 1);
+            public String getDataSourceFactoryName(String orderId) {
+                return "dsf" + orderId.substring(1, 2);
             }
 
             @Override
             public String getTargetTable(String table, String orderId) {
-                return table + "_" + orderId.substring(1, 2);
+                return table + "_" + orderId.substring(2, 3);
             }
 
         }
