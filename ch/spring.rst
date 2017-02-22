@@ -116,57 +116,56 @@ Mango框架使用SimpleDataSourceFactory连接单一数据库，使用MasterSlav
 
 	<beans>
 
-	    <!-- 配置多数据库数据源工厂 -->
-	    <bean id="dsf" class="org.jfaster.mango.datasource.MultipleDatabaseDataSourceFactory">
-	        <property name="factories">
-	            <map>
-	                <entry key="db1">
-	                    <bean class="org.jfaster.mango.datasource.SimpleDataSourceFactory">
-	                        <property name="dataSource">
-	                            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
-	                                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-	                                <property name="url" value="jdbc:mysql://localhost:3306/mango_example" />
-	                                <property name="username" value="root" />
-	                                <property name="password" value="root" />
-	                            </bean>
-	                        </property>
-	                    </bean>
-	                </entry>
-	                <entry key="db2">
-	                    <bean class="org.jfaster.mango.datasource.MasterSlaveDataSourceFactory">
-	                        <property name="master">
-	                            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
-	                                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-	                                <property name="url" value="jdbc:mysql://localhost:3306/mango_example_master" />
-	                                <property name="username" value="root" />
-	                                <property name="password" value="root" />
-	                            </bean>
-	                        </property>
-	                        <property name="slaves">
-	                            <list>
-	                                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
-	                                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-	                                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave1" />
-	                                    <property name="username" value="root" />
-	                                    <property name="password" value="root" />
-	                                </bean>
-	                                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
-	                                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-	                                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave2" />
-	                                    <property name="username" value="root" />
-	                                    <property name="password" value="root" />
-	                                </bean>
-	                            </list>
-	                        </property>
-	                    </bean>
-	                </entry>
-	            </map>
+	    <!-- 配置简单数据源工厂 -->
+	    <bean id="simpleDataSourceFactory" class="org.jfaster.mango.datasource.SimpleDataSourceFactory">
+	        <property name="name" value="dsf1" />
+	        <property name="dataSource">
+	            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                <property name="url" value="jdbc:mysql://localhost:3306/mango_example" />
+	                <property name="username" value="root" />
+	                <property name="password" value="root" />
+	            </bean>
+	        </property>
+	    </bean>
+
+	    <!-- 配置主从数据源工厂 -->
+	    <bean id="masterSlaveDataSourceFactory" class="org.jfaster.mango.datasource.MasterSlaveDataSourceFactory">
+	        <property name="name" value="dsf2" />
+	        <property name="master">
+	            <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                <property name="url" value="jdbc:mysql://localhost:3306/mango_example_master" />
+	                <property name="username" value="root" />
+	                <property name="password" value="root" />
+	            </bean>
+	        </property>
+	        <property name="slaves">
+	            <list>
+	                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave1" />
+	                    <property name="username" value="root" />
+	                    <property name="password" value="root" />
+	                </bean>
+	                <bean class="org.jfaster.mango.datasource.DriverManagerDataSource">
+	                    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	                    <property name="url" value="jdbc:mysql://localhost:3306/mango_example_slave2" />
+	                    <property name="username" value="root" />
+	                    <property name="password" value="root" />
+	                </bean>
+	            </list>
 	        </property>
 	    </bean>
 
 	    <!-- 配置mango对象 -->
 	    <bean id="mango" class="org.jfaster.mango.operator.Mango" factory-method="newInstance">
-	        <property name="dataSourceFactory" ref="dsf" />
+	        <property name="dataSourceFactories">
+	            <list>
+	                <ref bean="simpleDataSourceFactory" />
+	                <ref bean="masterSlaveDataSourceFactory" />
+	            </list>
+	        </property>
 	    </bean>
 
 	    <!-- 配置扫描使用@DB注解修饰的DAO类 -->
