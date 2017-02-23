@@ -33,7 +33,7 @@ ___________________________
     git clone https://github.com/jfaster/mango-stat-example.git
     cd mango-stat-example
     mvn clean jetty:run
-    # 使用浏览器访问htt://127.0.0.1:8080/mango-stat
+    # 使用浏览器访问localhost:8080/mango-stat
 
 周期性生成实时统计数据
 ______________________
