@@ -38,10 +38,10 @@ ______
         public interface TableShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -67,10 +67,10 @@ ______
         public interface TableShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -114,10 +114,10 @@ getTargetTable方法是表分片策略的核心，共两个输入参数，输出
         public interface TableShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -153,10 +153,10 @@ getTargetTable方法是表分片策略的核心，共两个输入参数，输出
         public interface TableShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(@TableShardingBy("uid") Order order);
+            public void addOrder(@TableShardingBy("uid") Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(@TableShardingBy int uid);
+            public List<Order> getOrdersByUid(@TableShardingBy int uid);
 
         }
 
@@ -244,10 +244,10 @@ __________
         public interface DatabaseShardingOrderDao {
 
             @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from t_order where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -272,10 +272,10 @@ __________
         public interface DatabaseShardingOrderDao {
 
             @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from t_order where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -316,10 +316,10 @@ getDataSourceFactoryName方法是数据库分片策略的核心，返回最终�
         public interface DatabaseShardingOrderDao {
 
             @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(Order order);
+            public void addOrder(Order order);
 
             @SQL("select id, uid, price, status from t_order where uid = :1")
-            List<Order> getOrdersByUid(int uid);
+            public List<Order> getOrdersByUid(int uid);
 
         }
 
@@ -354,10 +354,10 @@ getDataSourceFactoryName方法是数据库分片策略的核心，返回最终�
         public interface DatabaseShardingOrderDao {
 
             @SQL("insert into t_order(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(@DatabaseShardingBy("uid") Order order);
+            public void addOrder(@DatabaseShardingBy("uid") Order order);
 
             @SQL("select id, uid, price, status from t_order where uid = :1")
-            List<Order> getOrdersByUid(@DatabaseShardingBy int uid);
+            public List<Order> getOrdersByUid(@DatabaseShardingBy int uid);
 
         }
 
@@ -411,10 +411,10 @@ __________________________
         public interface ShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(@DatabaseShardingBy("uid") @TableShardingBy("uid") Order order);
+            public void addOrder(@DatabaseShardingBy("uid") @TableShardingBy("uid") Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(@DatabaseShardingBy @TableShardingBy int uid);
+            public List<Order> getOrdersByUid(@DatabaseShardingBy @TableShardingBy int uid);
 
         }
 
@@ -493,10 +493,10 @@ ____________
         public interface SmartShardingOrderDao {
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
-            void addOrder(@ShardingBy("uid") Order order);
+            public void addOrder(@ShardingBy("uid") Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
-            List<Order> getOrdersByUid(@ShardingBy int uid);
+            public List<Order> getOrdersByUid(@ShardingBy int uid);
 
         }
 
@@ -561,15 +561,15 @@ ______________
 
             @SQL("insert into #table(id, uid, price, status) values(:id, :uid, :price, :status)")
             @Sharding(shardingStrategy = OrderUidShardingStrategy.class)
-            void addOrder(@ShardingBy("uid") Order order);
+            public void addOrder(@ShardingBy("uid") Order order);
 
             @SQL("select id, uid, price, status from #table where uid = :1")
             @Sharding(shardingStrategy = OrderUidShardingStrategy.class)
-            List<Order> getOrdersByUid(@ShardingBy int uid);
+            public List<Order> getOrdersByUid(@ShardingBy int uid);
 
             @SQL("select id, uid, price, status from #table where id = :1")
             @Sharding(shardingStrategy = OrderIdShardingStrategy.class)
-            Order getOrderById(@ShardingBy String id);
+            public Order getOrderById(@ShardingBy String id);
 
         }
 

@@ -39,14 +39,14 @@ __________
 .. code-block:: java
 
     @SQL("insert into binding_user(uid, name, age) values(:uid, :name, :age)")
-    public void addUserByRename(@Rename("uid") int uid, @Rename("name") String name, @Rename("age") int age);
+    void addUserByRename(@Rename("uid") int uid, @Rename("name") String name, @Rename("age") int age);
 
 需要注意的是，一旦使用@Rename注解对参数进行重命名，则不能再通过序号绑定参数，下面是一个不合法的实例：
 
 .. code-block:: java
 
     @SQL("insert into binding_user(uid, name, age) values(:1, :name, :age)")
-    public void addUserError(@Rename("uid") int uid, @Rename("name") String name, @Rename("age") int age);
+    void addUserError(@Rename("uid") int uid, @Rename("name") String name, @Rename("age") int age);
 
 
 列表参数绑定

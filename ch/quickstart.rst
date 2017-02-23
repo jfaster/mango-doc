@@ -58,7 +58,7 @@ fruit表中有id，name，num三个字段，其中id是自增主键，不用关�
 创建HelloWorld类
 ________________
 
-在org.jfaster.mango.example.quickstar包下创建HelloWorld类:
+在 ``org.jfaster.mango.example.quickstar`` 包下创建 ``HelloWorld`` 类:
 
 .. code-block:: java
 
@@ -114,12 +114,12 @@ __________________
 构造数据源并初始化mango对象
 ___________________________
 
-mango框架对java标准数据源javax.sql.DataSource进行了简单实现，所以这里构造数据源不需要引入第三方jar包。
+mango框架对java标准数据源 ``javax.sql.DataSource`` 进行了简单实现，所以这里构造数据源不需要引入第三方jar包。
 
 初始化数据源需要4个参数:
 
-* **driverClassName**: 驱动程序类名，这里我们使用MySQL驱动，所以类名是 *com.mysql.jdbc.Driver* 。
-* **url**: 连接数据库的url，这里我们将连接到本地MySQL的mango_example库，所以地址为 *jdbc:mysql://localhost:3306/mango_example* 。
+* **driverClassName**: 驱动程序类名，这里我们使用MySQL驱动，所以类名是 ``com.mysql.jdbc.Driver`` 。
+* **url**: 连接数据库的url，这里我们将连接到本地MySQL的mango_example库，所以地址为 ``jdbc:mysql://localhost:3306/mango_example`` 。
 * **username**: 数据库用户名，这里我们使用root作为用户名。
 * **password**: 用户名所对应的密码，这里我们使用root作为密码。
 
@@ -208,9 +208,9 @@ ___________________________
 
     }
 
-运行上面代码，控制台中将输出 *7* ，同时您的数据库中会被插入一行name=apple，num=7的数据。
+运行上面代码，控制台中将输出 *7* ，同时您的数据库中会被插入一行 ``name=apple，num=7`` 的数据。
 
-如果再运行一次，控制台中将输出 *14* ，同时您的数据库中会再被插入一行name=apple，num=7的数据。
+如果再运行一次，控制台中将输出 *14* ，同时您的数据库中会再被插入一行 ``name=apple，num=7`` 的数据。
 
 查看完整示例代码和表结构
 ________________________

@@ -58,10 +58,10 @@ __________
 
         @ReturnGeneratedId
         @SQL("insert into article(uid, title, content) values(:uid, :title, :content)")
-        int addArticle(Article article);
+        public int addArticle(Article article);
 
         @SQL("select id, uid, title, content from article where id = :1")
-        Article getArticle(int id);
+        public Article getArticle(int id);
 
     }
 
@@ -107,10 +107,10 @@ __________
 
         @ReturnGeneratedId
         @SQL("insert into article(uid, title, content) values(:uid, :title, :content)")
-        int addArticle(Article article);
+        public int addArticle(Article article);
 
         @SQL("select id, uid, title, content from article where id = :1")
-        Article getArticle(int id);
+        public Article getArticle(int id);
 
     }
 
@@ -163,10 +163,10 @@ ______________
 
         @ReturnGeneratedId
         @SQL("insert into blog(uid, title, content) values(:uid, :title, :content)")
-        int addBlog(Blog blog);
+        public int addBlog(Blog blog);
 
         @SQL("select id, uid, title, content from blog where id = :1")
-        Blog getBlog(int id);
+        public Blog getBlog(int id);
 
     }
 
@@ -177,10 +177,10 @@ ______________
 
         @ReturnGeneratedId
         @SQL("insert into comment(uid, title, content) values(:uid, :title, :content)")
-        int addComment(Comment comment);
+        public int addComment(Comment comment);
 
         @SQL("select id, uid, title, content from comment where id = :1")
-        Comment getComment(int id);
+        public Comment getComment(int id);
 
     }
 
