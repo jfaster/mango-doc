@@ -10,6 +10,7 @@
     basic   
     binding
     mapping
+    crud
     datasource
     sharding
     functional
