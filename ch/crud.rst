@@ -160,7 +160,28 @@ OrderB对象
 自定义查询
 __________
 
-待续
+mango框架提供使用方法名的方式自定义查询，方法名必须以getBy,findBy,queryBy,selectBy开头
+
+===============================    ========================================    ============================================
+关键字                              样例                                         对应SQL       
+===============================    ========================================    ============================================
+And                                findByIdAndName                             … where id = :1 and name = :2
+Or                                 findByIdOrName                              … where id = :1 or name = :2
+Equals                             findById,findByIdEquals                     … where id = :1
+Between                            findByStartDateBetween                      … where startDate between :1 and :2
+LessThan                           findByAgeLessThan                           … where age < :1
+LessThanEqual                      findByAgeLessThanEqual                      … where age <= :1
+GreaterThan                        findByAgeGreaterThan                        … where age > :1
+GreaterThanEqual                   findByAgeGreaterThanEqual                   … where age >= :1
+IsNull                             findByAgeIsNull                             … where age is null
+NotNull                            findByAgeNotNull                            … where age not null
+OrderBy                            findByAgeOrderByIdDesc                      … where age = :1 order by id desc
+Not                                findByLastnameNot                           … where lastname <> :1
+In                                 findByAgeIn(Collection<Age> ages)           … where id = :1 or name = :2
+NotIn                              findByAgeNotIn(Collection<Age> ages)        … where id = :1 or name = :2
+True                               findByActiveTrue                            … where active = true
+False                              findByActiveFalse                           … where active = false
+===============================    ========================================    ============================================
 
 
 
