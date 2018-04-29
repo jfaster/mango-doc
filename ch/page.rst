@@ -73,7 +73,7 @@ _____________
 
 	        int pageNum = 2;
 	        int pageSize = 3;
-	        Page page = Page.create(pageNum, pageSize);
+	        Page page = Page.create(pageNum, pageSize, true);
 	        List<Message> msgs = dao.getMessages(uid, page);
 	        System.out.println("total: " + page.getTotal());
 	        System.out.println("msgs: " + msgs);
@@ -93,13 +93,13 @@ _____________
 
 	}
 
-上面的代码中，我们首先往message表中插入了10条数据，然后进行分页查询，每3条数据为1页，取第2页数据。
+上面的代码中，我们首先往message表中插入了10条数据，然后进行分页查询，每3条数据为1页，取第3页数据（分页从0开始，pageNum=2表示第3页）。
 
 上面的分页代码，使用了mango框架内置的分页拦截器 `MySQLPageInterceptor <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/plugin/page/MySQLPageInterceptor.java>`_ 与分页类 `Page <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/plugin/page/Page.java>`_。
 
 简单说明一下分页原理：
 
-1. 执行MessageDao中的getMessages方法时，传入page对象，page对象中的pageNum属性指定分页号（从1开始），page对象中的pageSize属性指定每页数据数量
+1. 执行MessageDao中的getMessages方法时，传入page对象，page对象中的pageNum属性指定分页号（从0开始），page对象中的pageSize属性指定每页数据数量
 2. MySQLPageInterceptor拦截器根据原始SQL会自动生成一个获得数据总量的SQL，执行该SQL获取到数据总量后，把数据总量放入page对象的total属性中
 3. MySQLPageInterceptor拦截器改写原始SQL，添加limit关键字和分页信息
 4. 执行改写后的SQL，获得分页数据列表
