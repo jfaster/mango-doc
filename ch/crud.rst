@@ -249,6 +249,8 @@ True                               findByActiveTrue                            �
 False                              findByActiveFalse                           … where active = false
 ===============================    ========================================    ============================================
 
+查看完整示例代码和表结构
+________________________
 
-
+**增删改查NoSQL** 的所有代码和表结构均可以在 `mango-example <https://github.com/jfaster/mango-example/tree/master/src/main/java/org/jfaster/mango/example/crud>`_ 中找到。
 
