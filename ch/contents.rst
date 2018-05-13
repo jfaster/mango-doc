@@ -21,4 +21,5 @@
     stat
     logging
     spring
+    springboot
     page

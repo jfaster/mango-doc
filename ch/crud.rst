@@ -249,6 +249,24 @@ True                               findByActiveTrue                            �
 False                              findByActiveFalse                           … where active = false
 ===============================    ========================================    ============================================
 
+带分页的自定义数据查询
+______________________
+
+请先查看 :ref:`分页查询`
+
+分页查询的代码如下：
+
+.. code-block:: java
+
+	@DB(table = "t_order")
+	public interface OrderPageNoSqlDao extends CrudDao<Order, Integer> {
+
+	  List<Order> findByUid(int uid, Page page);
+
+	  List<Order> findByIdOrUid(int id, int uid, Page page);
+
+	}
+
 查看完整示例代码和表结构
 ________________________
 
