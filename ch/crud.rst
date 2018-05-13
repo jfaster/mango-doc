@@ -157,10 +157,76 @@ OrderB对象
 
 * t_order_b表中没有address字段，我们使用 `@Ignore <https://github.com/jfaster/mango/blob/master/src/main/java/org/jfaster/mango/annotation/Ignore.java>`_ 注解，忽略OrderB类的address属性
 
-自定义查询
-__________
+自定义数据操作
+______________
 
-mango框架提供使用方法名的方式自定义查询，方法名必须以getBy,findBy,queryBy,selectBy开头
+CrudDao接口提供了简单的数据操作方法，如何进行复杂的自定义数据操作？
+
+下面是使用SQL进行数据操作的代码：
+
+.. code-block:: java
+
+	@DB(table = "t_order")
+	public interface OrderSqlDao {
+
+	  @SQL("select id, uid, status from #table where id = :1")
+	  Order findById(int id);
+
+	  @SQL("select id, uid, status from #table where uid = :1")
+	  List<Order> findByUid(int uid);
+
+	  @SQL("select id, uid, status from #table where id = :1 and uid = :2")
+	  Order findByIdAndUid(int id, int uid);
+
+	  @SQL("select id, uid, status from #table where id = :1 or uid = :2")
+	  Order findByIdOrUid(int id, int uid);
+
+	  @SQL("select count(1) from #table where uid = :1")
+	  int countByUid(int uid);
+
+	  @SQL("delete from #table where uid = :1")
+	  int deleteByUid(int uid);
+
+	}
+
+上面的代码与下面完全等价：
+
+.. code-block:: java
+
+	@DB(table = "t_order")
+	public interface OrderNoSqlDao extends CrudDao<Order, Integer> {
+
+	  Order findById(int id);
+
+	  List<Order> findByUid(int uid);
+
+	  Order findByIdAndUid(int id, int uid);
+
+	  List<Order> findByIdOrUid(int id, int uid);
+
+	  int countByUid(int uid);
+
+	  int deleteByUid(int uid);
+
+	}
+
+mango框架提供使用方法名的方式进行自定义操作：
+
+方法名以getBy,findBy,queryBy,selectBy开头表示查询
+
+方法名以countBy开头表示计数
+
+方法名以deleteBy,removeBy开头表示删除
+
+以 **findById** 为例，findBy后面的关键字为Id，表示根据id查询，findById会被转化为SQL：*select id, uid, status from #table where id = :1*
+
+以 **findByIdAndUid** 为例，findBy后面的关键字为IdAndUid，表示根据id和uid查询，findByIdAndUid会被转化为SQL：*select id, uid, status from #table where id = :1 and uid = :2*
+
+以 **countByUid** 为例，countBy后面的关键字为Uid，表示根据uid计数，countByUid会被转化为SQL：*select count(1) from #table where uid = :1*
+
+以 **deleteByUid** 为例，deleteBy后面的关键字为Uid，表示根据uid删除，deleteByUid会被转化为SQL：*delete from #table where uid = :1*
+
+下面是常用的关键字-SQL对应表：
 
 ===============================    ========================================    ============================================
 关键字                              样例                                         对应SQL       
