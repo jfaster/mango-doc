@@ -243,8 +243,8 @@ IsNull                             findByAgeIsNull                             �
 NotNull                            findByAgeNotNull                            … where age not null
 OrderBy                            findByAgeOrderByIdDesc                      … where age = :1 order by id desc
 Not                                findByLastnameNot                           … where lastname <> :1
-In                                 findByAgeIn(Collection<Age> ages)           … where id = :1 or name = :2
-NotIn                              findByAgeNotIn(Collection<Age> ages)        … where id = :1 or name = :2
+In                                 findByAgeIn(Collection<Age> ages)           … where age in (:1)
+NotIn                              findByAgeNotIn(Collection<Age> ages)        … where age not in (:1)
 True                               findByActiveTrue                            … where active = true
 False                              findByActiveFalse                           … where active = false
 ===============================    ========================================    ============================================
