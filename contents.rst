@@ -14,11 +14,8 @@
     datasource
     sharding
     functional
-    interceptor
     dynamic
-    cache
     transaction
-    stat
     logging
     spring
     springboot
