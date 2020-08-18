@@ -10,6 +10,7 @@
     basic   
     binding
     mapping
+    page
     crud
     datasource
     sharding
@@ -19,4 +20,3 @@
     logging
     spring
     springboot
-    page
