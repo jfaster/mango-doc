@@ -11,10 +11,10 @@
     binding
     mapping
     page
+    transfer
     crud
     datasource
     sharding
-    functional
     dynamic
     transaction
     logging
